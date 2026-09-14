@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Práctica PAES — Historia</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --paper: #fbfbf7;
+    --paper-2: #f3f2ec;
+    --ink: #23261f;
+    --ink-2: #383c31;
+    --ink-soft: rgba(35,38,31,0.6);
+    --gold: #c68a1f;
+    --gold-soft: rgba(198,138,31,0.14);
+    --select: #4a7fd6;
+    --select-bg: rgba(74,127,214,0.12);
+    --correct: #1f9d55;
+    --correct-bg: rgba(31,157,85,0.14);
+    --wrong: #e5484d;
+    --wrong-bg: rgba(229,72,77,0.12);
+    --line: rgba(35,38,31,0.12);
+    --font-display: 'Baloo 2', 'Inter', sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(176,141,62,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 600px at 100% 100%, rgba(31,42,36,0.05), transparent 55%);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  .app { width: 100%; max-width: 640px; }
+
+  /* ---------- HEADER ---------- */
+  .top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 10px;
+  }
+  .title {
+    font-family: var(--font-display); font-weight: 700; font-size: 2.4rem;
+    letter-spacing: -0.01em;
+  }
+  .title span { color: var(--gold); font-weight: 700; }
+  .subtitle { font-size: 0.85rem; color: var(--ink-soft); margin-top: 2px; }
+
+  .stats { display: flex; gap: 20px; font-size: 0.85rem; }
+  .stat { text-align: right; }
+  .stat b { display: block; font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+  .stat small { color: var(--ink-soft); }
+
+  /* ---------- MASTERY TICKS ---------- */
+  .mastery-row { display: flex; gap: 3px; margin-bottom: 34px; }
+  .tick {
+    flex: 1; height: 6px; border-radius: 3px; background: var(--line);
+    transition: background 0.4s ease;
+  }
+
+  /* ---------- CARD ---------- */
+  .card {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 44px 38px;
+    position: relative;
+    box-shadow: 0 2px 14px rgba(35,38,31,0.05);
+  }
+
+  .eje {
+    font-size: 0.8rem; color: var(--gold); font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  .question {
+    font-family: var(--font-display); font-size: 1.35rem; font-weight: 500;
+    line-height: 1.4; color: var(--ink); margin-bottom: 30px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    text-align: left; padding: 15px 18px; border-radius: 14px;
+    border: 2px solid var(--line); background: rgba(255,255,255,0.6);
+    font-family: var(--font-body); font-size: 0.98rem; color: var(--ink);
+    cursor: pointer; display: flex; gap: 12px; align-items: flex-start;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  }
+  .option:hover:not(:disabled) { border-color: var(--select); background: var(--select-bg); }
+  .option:disabled { cursor: default; }
+  .option:active:not(:disabled) { transform: scale(0.99); }
+
+  .option .letter {
+    font-family: var(--font-display); font-weight: 700; color: var(--gold);
+    flex-shrink: 0; width: 20px;
+  }
+
+  .option.selected { border-color: var(--select); background: var(--select-bg); }
+  .option.selected .letter { color: var(--select); }
+
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.correct .letter { color: var(--correct); }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  .option.wrong .letter { color: var(--wrong); }
+  .option.dim { opacity: 0.45; }
+
+  .confirm-btn {
+    margin-top: 18px; padding: 14px 26px; border: none; border-radius: 14px;
+    background: var(--select); color: white; font-family: var(--font-display);
+    font-weight: 600; font-size: 1rem; cursor: pointer; width: 100%;
+    transition: background 0.15s ease, opacity 0.15s ease;
+  }
+  .confirm-btn:hover:not(:disabled) { background: #3b6bc0; }
+  .confirm-btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+  /* ---------- FEEDBACK ---------- */
+  .feedback {
+    margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line);
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity 0.35s ease;
+  }
+  .feedback.show { opacity: 1; max-height: 400px; }
+
+  .verdict { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; margin-bottom: 8px; }
+  .verdict.ok { color: var(--correct); }
+  .verdict.no { color: var(--wrong); }
+  .explanation { font-size: 0.93rem; color: var(--ink-2); line-height: 1.55; }
+
+  .next-btn {
+    margin-top: 22px; padding: 13px 26px; border: none; border-radius: 14px;
+    background: var(--ink); color: var(--paper); font-family: var(--font-display);
+    font-weight: 600; font-size: 0.98rem; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .next-btn:hover { background: var(--ink-2); }
+
+  /* ---------- FOOTER ---------- */
+  .foot {
+    margin-top: 26px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.8rem; color: var(--ink-soft); flex-wrap: wrap; gap: 10px;
+  }
+  .foot-actions { display: flex; gap: 14px; }
+  .reset-btn {
+    background: none; border: none; color: var(--ink-soft); text-decoration: underline;
+    font-size: 0.8rem; cursor: pointer; font-family: var(--font-body);
+  }
+  .reset-btn:hover { color: var(--wrong); }
+
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* ---------- SETUP SCREEN ---------- */
+  .setup-card {
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: 20px;
+    padding: 32px; box-shadow: 0 2px 14px rgba(35,38,31,0.05);
+  }
+  .setup-section { margin-bottom: 26px; }
+  .setup-label {
+    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+    margin-bottom: 12px; color: var(--ink);
+  }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--font-body); font-size: 0.88rem; font-weight: 600;
+    padding: 9px 16px; border-radius: 999px; border: 2px solid var(--line);
+    background: white; color: var(--ink); cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .chip:hover { border-color: var(--select); }
+  .chip.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .chip.eje-chip.active { color: white; }
+  #dificultad-chips .chip.active { background: #1c8fcb; border-color: #1c8fcb; color: white; }
+
+  .mode-list { display: flex; flex-direction: column; gap: 10px; }
+  .mode-item { display: flex; flex-direction: column; }
+  .mode-config {
+    margin-top: 8px; padding: 12px 14px; background: var(--select-bg);
+    border: 1px solid var(--select); border-radius: 12px;
+  }
+  .mode-config .setup-label { font-size: 0.85rem; margin-bottom: 8px; }
+  .mode-option {
+    text-align: left; padding: 14px 18px; border-radius: 14px;
+    border: 2px solid var(--line); background: white; cursor: pointer;
+    display: flex; flex-direction: column; gap: 4px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .mode-option:hover { border-color: var(--select); }
+  .mode-option.active { border-color: var(--select); background: var(--select-bg); }
+  .mode-name { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+  .mode-desc { font-size: 0.82rem; color: var(--ink-soft); }
+  .mode-option { position: relative; padding-top: 16px; }
+  .mode-more {
+    position: absolute; top: 14px; right: 14px;
+    width: 17px; height: 17px; border-radius: 50%;
+    border: 1.5px solid var(--select); color: var(--select);
+    font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: 700;
+    font-size: 0.68rem; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-sizing: border-box;
+  }
+  .mode-more-text {
+    font-size: 0.8rem; color: var(--ink-soft); margin-top: 6px; display: none;
+  }
+  .mode-more-text.show { display: block; }
+
+  .pool-count { font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 18px; text-align: center; }
+
+  .start-btn {
+    width: 100%; padding: 16px; border: none; border-radius: 14px;
+    background: #1c8fcb; color: white; font-family: var(--font-display);
+    font-weight: 700; font-size: 1.05rem; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .start-btn:hover:not(:disabled) { background: #17739f; }
+  .start-btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+  .back-btn {
+    background: none; border: none; color: var(--ink-soft); font-family: var(--font-body);
+    font-weight: 600; font-size: 0.9rem; cursor: pointer; padding: 8px 0;
+  }
+  .back-btn:hover { color: var(--ink); }
+
+  .timer-pill {
+    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+    padding: 6px 14px; border-radius: 999px; background: var(--wrong-bg); color: var(--wrong);
+  }
+  .progress-pill {
+    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+    padding: 6px 14px; border-radius: 999px; background: var(--select-bg); color: var(--select);
+  }
+
+  /* ---------- RESULTS SCREEN ---------- */
+  .results-card {
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: 20px;
+    padding: 40px 32px; text-align: center; margin-bottom: 20px;
+  }
+  .results-score {
+    font-family: var(--font-display); font-weight: 800; font-size: 3rem; color: var(--ink);
+  }
+  .results-sub { font-size: 0.95rem; color: var(--ink-soft); margin-top: 6px; margin-bottom: 24px; }
+  .results-breakdown { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+  .results-stat { text-align: center; }
+  .results-stat b { display: block; font-family: var(--font-display); font-size: 1.4rem; }
+  .results-stat.ok b { color: var(--correct); }
+  .results-stat.no b { color: var(--wrong); }
+  .results-stat small { color: var(--ink-soft); font-size: 0.78rem; }
+
+  /* ---------- PROGRESS PANEL / STREAK / SPARKLINE ---------- */
+  .progress-panel { margin-bottom: 18px; }
+  .progress-row {
+    display: flex; align-items: center; gap: 16px; background: var(--paper-2);
+    border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px;
+  }
+  .streak-badge {
+    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+    white-space: nowrap; color: var(--ink);
+  }
+  .flame {
+    display: inline-block; animation: flicker 2.4s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+  @keyframes flicker {
+    0%, 100% { transform: scale(1) rotate(-2deg); filter: brightness(1); }
+    25%      { transform: scale(1.08) rotate(2deg); filter: brightness(1.15); }
+    50%      { transform: scale(0.95) rotate(-1deg); filter: brightness(0.95); }
+    75%      { transform: scale(1.05) rotate(1deg); filter: brightness(1.1); }
+  }
+
+  /* ---------- DIAGNOSTIC BANNER ---------- */
+  .diagnostic-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    background: var(--select-bg); border: 2px solid var(--select); border-radius: 14px;
+    padding: 14px 18px; margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .diag-text { font-size: 0.88rem; color: var(--ink); }
+  .diag-btn {
+    background: var(--select); color: white; border: none; border-radius: 10px;
+    padding: 10px 18px; font-family: var(--font-display); font-weight: 700;
+    font-size: 0.88rem; cursor: pointer; white-space: nowrap;
+  }
+  .diag-btn:hover { background: #3b6bc0; }
+
+  /* ---------- RESULTS: MISSED BREAKDOWN + PUNTAJE PAES ---------- */
+  .paes-score-box {
+    background: var(--select-bg); border: 1px solid var(--select); border-radius: 14px;
+    padding: 16px; margin-top: 18px; text-align: center;
+  }
+  .paes-score-box b { font-family: var(--font-display); font-size: 1.6rem; color: var(--select); }
+  .paes-score-box small { display: block; color: var(--ink-soft); font-size: 0.78rem; margin-top: 2px; }
+
+  .missed-list { margin-top: 22px; text-align: left; }
+  .missed-list h3 {
+    font-family: var(--font-display); font-size: 1rem; margin-bottom: 12px; color: var(--ink);
+  }
+  .missed-item {
+    background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .missed-eje { font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; }
+  .missed-q { font-size: 0.9rem; color: var(--ink); margin-bottom: 8px; }
+  .missed-answers { font-size: 0.82rem; }
+  .missed-answers .wrong-ans { color: var(--wrong); }
+  .missed-answers .right-ans { color: var(--correct); }
+
+  .diag-recommend {
+    background: var(--correct-bg); border: 1px solid var(--correct); border-radius: 12px;
+    padding: 14px 16px; margin-top: 18px; font-size: 0.88rem; color: var(--ink); text-align: left;
+  }
+
+  /* ---------- CUENTA / LOGIN ---------- */
+  .account-bar { display: flex; justify-content: center; margin-bottom: 18px; }
+  .account-bar button {
+    background: none; border: none; color: var(--select); font-family: var(--font-body);
+    font-weight: 600; font-size: 0.85rem; cursor: pointer; text-decoration: underline;
+  }
+  .account-info {
+    font-size: 0.85rem; color: var(--ink-soft); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;
+  }
+  .account-info .logout-link {
+    background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.85rem;
+  }
+
+  .auth-modal {
+    position: fixed; inset: 0; background: rgba(35,38,31,0.45);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  }
+  .auth-card {
+    background: var(--paper); border-radius: 20px; padding: 32px; width: 100%; max-width: 380px;
+    position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  }
+  .auth-close {
+    position: absolute; top: 14px; right: 16px; background: none; border: none;
+    font-size: 1.4rem; line-height: 1; cursor: pointer; color: var(--ink-soft);
+  }
+  .auth-input {
+    width: 100%; padding: 13px 14px; margin-top: 12px; border-radius: 12px; border: 2px solid var(--line);
+    font-family: var(--font-body); font-size: 0.95rem; background: white; color: var(--ink);
+  }
+  .auth-input:focus-visible { outline: 2px solid var(--select); outline-offset: 1px; }
+  .auth-error {
+    background: var(--wrong-bg); color: var(--wrong); border-radius: 10px; padding: 10px 14px;
+    font-size: 0.85rem; margin-top: 12px;
+  }
+  .auth-or { text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin: 14px 0; }
+  .auth-google-btn {
+    width: 100%; padding: 13px; border-radius: 14px; border: 2px solid var(--line); background: white;
+    color: var(--ink); font-family: var(--font-body); font-weight: 600; font-size: 0.92rem; cursor: pointer;
+  }
+  .auth-google-btn:hover { border-color: var(--select); }
+  .auth-switch { text-align: center; font-size: 0.85rem; color: var(--ink-soft); margin-top: 18px; }
+  .auth-switch a { color: var(--select); font-weight: 600; text-decoration: none; }
+  #auth-submit { margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     BANCO DE PREGUNTAS — Forma 123, Admisión 2026 (DEMRE).
+     El eje, la respuesta correcta y la explicación ya están
+     cargados (cruzados con el clavijero oficial). SOLO falta que
+     pegues el enunciado y las 4 alternativas exactas de cada
+     pregunta, copiándolos desde tu propio PDF de selección de
+     preguntas — reemplaza cada "PEGA AQUÍ..." por el texto real.
+     El número en el id corresponde al número de pregunta original
+     del folleto, para que sea fácil ubicarla.
+     ============================================================ -->
+<script>
+const OFFICIAL_QUESTIONS = [
+  { id: "q1", eje: "Formación Ciudadana", dificultad: "dificil", correct: 1,
+    question: "En el contexto del Estado de derecho vigente en Chile durante las primeras décadas del siglo XXI, se han registrado avances en materia de igualdad de género en diferentes ámbitos. ¿Cuál ha sido una acción del Estado tendiente a avanzar en una mayor igualdad de género en el ámbito institucional?",
+    options: ["El establecimiento por ley de la proporcionalidad de género en los cargos gerenciales.", "La fijación de cuotas de género en la presentación de las candidaturas parlamentarias.", "La implementación de un sistema de ingreso paritario de estudiantes a las escuelas públicas.", "El término de las brechas salariales como consecuencia de la política de equidad de género."],
+    explanation: "Las cuotas de género en las candidaturas parlamentarias son una acción concreta del Estado para avanzar hacia la igualdad de género a nivel institucional." },
+  { id: "q2", eje: "Formación Ciudadana", dificultad: "dificil", correct: 2,
+    question: "Lee el siguiente texto sobre la relación entre los medios de comunicación y la democracia: «Si históricamente los medios podían ser considerados como el cuarto poder, en tanto constituían una institución de la sociedad que podía vigilar el comportamiento de la clase gobernante, ahora los propios medios son a su vez vigilados por grupos que, a través de redes sociales online, participan activamente en los debates públicos, y que a menudo presentan niveles de desconfianza relativamente altos hacia las instituciones». CIPER Chile (2013). ¿Cuál es uno de los impactos que ha provocado en el funcionamiento de la democracia la situación descrita en el texto?",
+    options: ["El deterioro del carácter pluralista del intercambio de ideas.", "La falta de interés de la clase política por controlar la prensa.", "La diversificación de los espacios de involucramiento ciudadano.", "El debilitamiento de las garantías para ejercer la libertad de prensa."],
+    explanation: "Las redes sociales multiplicaron los espacios donde la ciudadanía participa y se involucra en el debate público, más allá de los medios tradicionales." },
+  { id: "q3", eje: "Formación Ciudadana", dificultad: "facil", correct: 3,
+    question: "Uno de los pilares del Estado de derecho es la división del poder estatal. ¿Por qué es importante que los poderes del Estado actúen con independencia?",
+    options: ["Porque incentiva la participación ciudadana en el aparato público.", "Porque permite prescindir de un ordenamiento jurídico permanente.", "Porque robustece la diversidad ideológica al interior de la sociedad.", "Porque contribuye a evitar el surgimiento de autoritarismos políticos."],
+    explanation: "La independencia entre los poderes del Estado es un contrapeso que impide la concentración de poder y, con ello, el surgimiento de regímenes autoritarios." },
+  { id: "q4", eje: "Formación Ciudadana", dificultad: "facil", correct: 0,
+    question: "En el siglo XXI, el régimen democrático es el sistema político más difundido en el mundo occidental. ¿Cuál es uno de los fundamentos que se le atribuye a este régimen?",
+    options: ["La garantía en el respeto a los derechos fundamentales.", "La importancia de una ideología única que dirige el gobierno.", "La toma de decisiones consensuadas entre los poderes estatales.", "La participación ciudadana directa en las decisiones gubernamentales."],
+    explanation: "Garantizar el respeto a los derechos fundamentales es uno de los pilares que sostiene la legitimidad de los regímenes democráticos." },
+  { id: "q6", eje: "Formación Ciudadana", dificultad: "facil", correct: 3,
+    question: "Los sistemas democráticos actuales consideran entre sus principios la transparencia, la cual obliga a los integrantes de las instituciones públicas a informar sobre sus acciones y decisiones a la ciudadanía. Al respecto, ¿de qué manera la transparencia contribuye al funcionamiento de la democracia?",
+    options: ["Garantizando la presencia de la ciudadanía en el debate público.", "Admitiendo la injerencia de la ciudadanía en el sistema de justicia.", "Asegurando el apoyo de la ciudadanía a las autoridades en ejercicio.", "Permitiendo que la ciudadanía fiscalice el ejercicio de la gestión estatal."],
+    explanation: "La transparencia permite que la ciudadanía fiscalice cómo se gestionan las instituciones públicas, fortaleciendo el control democrático." },
+  { id: "q7", eje: "Formación Ciudadana", dificultad: "dificil", correct: 3,
+    question: "La probidad es un atributo fundamental en las democracias actuales que involucra que en las acciones de los funcionarios públicos prevalezca el interés general por sobre el individual. Al respecto, ¿cuál es un mecanismo legal que contribuye a resguardar la probidad en el sistema democrático?",
+    options: ["La facultad del presidente de la República de remover empleados públicos.", "La intervención de la Contraloría en la elaboración del presupuesto nacional.", "La obligación de las Fuerzas Armadas de fiscalizar el gasto público nacional.", "La exigencia de declaración de patrimonio a las autoridades representativas."],
+    explanation: "Exigir declaración de patrimonio a las autoridades es un mecanismo legal concreto para resguardar la probidad en el ejercicio de cargos públicos." },
+  { id: "q8", eje: "Formación Ciudadana", dificultad: "dificil", correct: 0,
+    question: "En Chile, el Estado debe asegurar que todas las personas tengan un proceso judicial justo sin discriminación. Al respecto, ¿de qué manera el Estado promueve el cumplimiento de lo anterior?",
+    options: ["Garantizando legalmente la defensa a los grupos con menor nivel de ingresos.", "Procurando que causas legales de similar naturaleza tengan igual sentencia.", "Fomentando que los litigios penales sean resueltos con parcialidad en los tribunales.", "Asegurando que los tribunales tomen decisiones en conjunto con los otros poderes del Estado."],
+    explanation: "Garantizar defensa legal a quienes tienen menos ingresos ayuda a igualar el acceso a un proceso judicial justo, sin discriminación económica." },
+  { id: "q9", eje: "Formación Ciudadana", dificultad: "dificil", correct: 2,
+    question: "En el sistema democrático los partidos políticos ejercen un rol en la vinculación de la ciudadanía con la institucionalidad vigente. En el caso chileno estas organizaciones tienen un carácter autónomo y abarcan un variado espectro ideológico. En el contexto del sistema democrático nacional, ¿cuál es una de las acciones que realizan los partidos políticos de oposición?",
+    options: ["Vetar las iniciativas legales presentadas por el Ejecutivo.", "Aplicar sanciones a la corrupción en la administración pública.", "Fiscalizar la gestión realizada por las autoridades de gobierno.", "Limitar la cantidad de proyectos de ley discutidos en el Congreso."],
+    explanation: "Fiscalizar la gestión de gobierno es una función característica de los partidos de oposición dentro del sistema democrático." },
+  { id: "q10", eje: "Formación Ciudadana", dificultad: "facil", correct: 2,
+    question: "Uno de los principios del sistema democrático es la existencia de garantías de igualdad de derechos políticos para la población. En el caso chileno, se han tomado diversas medidas para facilitar el ejercicio del sufragio por parte de la ciudadanía. En el contexto chileno del siglo XXI, ¿cuál de las siguientes medidas ha adoptado el Estado de Chile para lograr este objetivo?",
+    options: ["Habilitar la votación a distancia de manera electrónica.", "Ampliar el rango de edad para participar en votaciones.", "Implementar el voto asistido en los locales de votación.", "Diversificar los organismos encargados de las votaciones."],
+    explanation: "El voto asistido en los locales de votación es una medida concreta adoptada en Chile para facilitar el ejercicio del sufragio." },
+  { id: "q11", eje: "Formación Ciudadana", dificultad: "dificil", correct: 0,
+    question: "Lee la siguiente noticia referida al funcionamiento del Poder Judicial chileno: «Según cifras del Poder Judicial, durante el 2015 una causa se demoraba en promedio 222 días. El año pasado esa cifra subió a 472 días. A juicio de los expertos, si bien la pandemia agudizó la situación, también existen razones de gestión y cambios en las causas penales que actualmente se tramitan, para lograr revertir esta situación es necesario hacer investigaciones más eficientes, con peritajes y diligencias estrictamente necesarias y pertinentes». Respecto del funcionamiento del sistema judicial, ¿qué impacto genera la situación descrita en el texto?",
+    options: ["Reduce la capacidad de administración oportuna de la justicia.", "Restringe el control de la probidad en el desempeño funcionario.", "Debilita la imparcialidad de las personas que dictan las condenas.", "Invalida la aplicación de las disposiciones contenidas en las sentencias."],
+    explanation: "El aumento en los tiempos de tramitación de causas judiciales reduce la capacidad del sistema para administrar justicia de forma oportuna." },
+  { id: "q12", eje: "Formación Ciudadana", dificultad: "dificil", correct: 3,
+    question: "Junto con su función legislativa, en Chile la Cámara de Diputadas y Diputados también posee facultades fiscalizadoras de los actos de gobierno. En este sentido, ¿cuál de las siguientes situaciones forma parte de las atribuciones fiscalizadoras de la Cámara de Diputadas y Diputados?",
+    options: ["La petición al Contralor General de la República de supervisar el desarrollo de los procesos electorales.", "La citación a los altos mandos policiales para establecer en conjunto la estructura jerárquica institucional.", "La orientación a las municipalidades de destinar la mayor parte de su presupuesto a mejorar la infraestructura.", "La interpelación al Ministro del Interior porque existen dudas sobre las estrategias en materia de seguridad pública."],
+    explanation: "Interpelar a un ministro para exigir explicaciones sobre su gestión es una atribución fiscalizadora explícita de la Cámara de Diputados; las otras opciones describen funciones que no le corresponden a esta cámara." },
+  { id: "q13", eje: "Formación Ciudadana", dificultad: "dificil", correct: 1,
+    question: "Lee el siguiente texto: «Los algoritmos de recomendación de las plataformas digitales priorizan el contenido que genera mayor interacción, lo que lleva a mostrarnos publicaciones afines a nuestras propias opiniones. […] quedamos aislados en comunidades donde predominan puntos de vista similares al nuestro, un espacio uniforme que actúa como una caja de resonancia que intensifica nuestros sesgos, debido a nuestra inclinación a validar como ciertas las informaciones que refuerzan lo que ya creemos. Según diversos investigadores en comunicación digital, el debate democrático se ve empobrecido cuando los ciudadanos dejan de exponerse a perspectivas divergentes». Rodríguez, M. (2019). En las sociedades democráticas del siglo XXI, las redes sociales han aumentado su influencia sobre el funcionamiento del sistema político. En este contexto, ¿de qué manera impacta en la sociedad democrática el fenómeno descrito en el texto?",
+    options: ["Disminuyendo el interés por utilizar plataformas digitales.", "Aumentando la polarización en el diálogo ciudadano.", "Reduciendo las instancias de debate en medios virtuales.", "Incrementando la objetividad de la información circulante."],
+    explanation: "El 'filtro burbuja' encierra a las personas en entornos de opinión homogéneos, lo que tiende a profundizar la polarización del debate ciudadano." },
+  { id: "q14", eje: "Formación Ciudadana", dificultad: "dificil", correct: 0,
+    question: "La ley electoral chilena establece la participación de una parte de la ciudadanía como vocal de mesa durante los procesos eleccionarios. Considerando el funcionamiento de las elecciones, ¿cuál es uno de los objetivos que tiene la figura de los vocales de mesa?",
+    options: ["Garantizar mayores niveles de transparencia electoral.", "Disminuir el gasto público asociado al proceso electoral.", "Vincular a la población con los partidos durante las elecciones.", "Evitar que el Estado se involucre en la gestión de las elecciones."],
+    explanation: "La figura del vocal de mesa busca garantizar mayor transparencia en el desarrollo de los procesos electorales." },
+  { id: "q15", eje: "Formación Ciudadana", dificultad: "dificil", correct: 3,
+    question: "Lee el siguiente texto referido a la relación que existe entre medios de comunicación y democracia: «Las democracias occidentales suelen mostrar gran preocupación por los impedimentos a la libertad de prensa en Rusia, en Zimbabwe o en el mundo árabe, pero se abstienen de todo comentario sobre los procesos monopolizadores que se desarrollan en el interior de sus Estados». Blesa, P. (2006). Medios de comunicación y democracia. ¿El poder de los medios o los medios al poder? Respecto de los riesgos que enfrenta una sociedad democrática, ¿a qué fenómeno se alude en el texto?",
+    options: ["El carácter globalizador de los medios de comunicación.", "El uso de los medios de comunicación como fuerza opositora.", "La escasa cobertura informativa de los medios de comunicación.", "La concentración de la propiedad de los medios de comunicación."],
+    explanation: "La concentración de la propiedad de los medios de comunicación es uno de los riesgos que enfrentan las sociedades democráticas." },
+
+  { id: "q16", eje: "Historia Universal", dificultad: "dificil", correct: 0,
+    question: "El ideario liberal difundido en América Latina durante el siglo XIX propuso un conjunto de ideas que resaltaban la condición individual y racional del ser humano. Al respecto, ¿de qué manera estas ideas influyeron en la formación de los nuevos Estados nacionales?",
+    options: ["Fijando diversas restricciones al ejercicio del poder político.", "Difundiendo principios fundados en el pensamiento católico.", "Erradicando las prácticas de nepotismo al interior del gobierno.", "Incorporando la participación electoral de los sectores populares."],
+    explanation: "El ideario liberal del siglo XIX buscó fijar límites al ejercicio del poder político en los nuevos Estados nacionales de América Latina." },
+  { id: "q17", eje: "Historia Universal", dificultad: "dificil", correct: 0,
+    question: "Durante la primera mitad del siglo XIX en América Latina se aplicaron las ideas liberales en el marco del proceso de conformación de los Estados nacionales. ¿Cuál fue una de las ideas liberales implementadas durante este período?",
+    options: ["La búsqueda del progreso material de la población.", "La ampliación del sufragio a los sectores populares.", "La obligación de transparentar la información pública.", "La erradicación de la participación militar en el gobierno."],
+    explanation: "La búsqueda del progreso material fue una de las ideas liberales centrales aplicadas en la construcción de los Estados nacionales latinoamericanos." },
+  { id: "q20", eje: "Historia Universal", dificultad: "dificil", correct: 0,
+    question: "Lee el siguiente texto referido al Estado-nación en América Latina durante el siglo XIX: «El nuevo Estado liberal se erigió sobre sociedades definidas como naciones. Este concepto de nación que empezó a utilizarse a partir de ahora alude a ciertos elementos comunes de la sociedad, tales como la comunidad territorial, de lengua y de cultura, pero no se definió su carácter clasista, sino que se concibió en principio como una unidad indivisible integrada por una suma de individualidades de carácter homogéneo e igualitario». Ossenbach Sauter, G. (1993). Estado y educación en América Latina a partir de su independencia (siglos XIX y XX). Considerando la descripción del texto, ¿cuál fue un efecto de la aplicación de esta forma de organización en la sociedad hispanoamericana del siglo XIX?",
+    options: ["Requirió la construcción de una identidad nacional desde las elites.", "Reconoció la multinacionalidad en los espacios geográficos locales.", "Consolidó a los pueblos indígenas como nuevos protagonistas nacionales.", "Favoreció la participación de los sectores populares en la política nacional."],
+    explanation: "La construcción de una identidad nacional homogénea fue impulsada principalmente desde las elites al conformarse los nuevos Estados-nación." },
+  { id: "q21", eje: "Historia Universal", dificultad: "dificil", correct: 3,
+    question: "Durante el siglo XIX, el liberalismo fue una doctrina política, económica y social que influyó en gran parte de los procesos de conformación de los Estados nacionales en Europa y América. En este contexto, ¿de qué forma se evidenció esta influencia en América Latina?",
+    options: ["En la implementación de un sistema democrático directo.", "En el ascenso de los sectores populares a los cargos públicos.", "En la proliferación masiva de gobiernos de carácter federalista.", "En el establecimiento jurídico de la división de los poderes públicos."],
+    explanation: "La influencia liberal en América Latina se reflejó jurídicamente en el establecimiento de la separación de los poderes públicos." },
+  { id: "q23", eje: "Historia de Chile", dificultad: "dificil", correct: 0,
+    question: "Lee el siguiente texto sobre el hallazgo de minerales en California y Australia a mediados del siglo XIX: «No ha pasado aún una generación desde que el mundo se sorprendió con el descubrimiento de yacimientos auríferos de riqueza inigualable localizados en la lejana región de California. Y cuando poco después se encontraron minas de este mismo metal precioso en Australia, el entusiasmo rebasó las fronteras. Aún en lugares tan lejanos y aislados como China, se sintieron los efectos y pronto los chinos comenzaron a migrar a California y Australia en búsqueda del dorado». Patterson, R. (1982). The New Golden Age and Influence of the Precious Metals upon the World. En Botero, M. (2007). La ruta del oro: una economía primaria exportadora: Antioquia, 1850-1890. Considerando el contexto histórico, ¿cuál fue un efecto en la economía chilena a mediados del siglo XIX de la situación descrita en el texto?",
+    options: ["Incrementó el volumen de la exportación de cereales.", "Amplió la inversión estatal en la producción de salitre.", "Aumentó los aranceles aduaneros a las importaciones.", "Acrecentó la inversión de capitales nacionales en Asia."],
+    explanation: "La fiebre del oro en California y Australia elevó la demanda de alimentos, lo que impulsó las exportaciones chilenas de cereales a esos mercados." },
+  { id: "q24", eje: "Historia de Chile", dificultad: "dificil", correct: 0,
+    question: "Diversas medidas económicas implementadas en Chile durante la primera mitad del siglo XIX, buscaban hacer más eficiente el sistema económico nacional. ¿Cuál fue una de las acciones llevada a cabo por los gobiernos de la época para conseguir este objetivo?",
+    options: ["El otorgamiento de incentivos a los particulares para invertir en actividades productivas.", "Priorizar la exportación de bienes manufacturados para aprovechar las ventajas comparativas.", "Restringir la inversión extranjera en áreas estratégicas para fomentar el desarrollo de la industria estatal.", "La incorporación en bloques interregionales de cooperación económica para asegurar el abastecimiento interno."],
+    explanation: "Los gobiernos de la primera mitad del siglo XIX buscaron dinamizar la economía otorgando incentivos a la inversión privada en actividades productivas." },
+  { id: "q27", eje: "Historia de Chile", dificultad: "dificil", correct: 0,
+    question: "Desde el periodo de la República Conservadora en Chile se produjo una expansión de la educación pública con la creación de leyes y la fundación de diversas instituciones educativas que contribuyeron al desarrollo del país. En este contexto, ¿cuál fue un impacto social provocado por la expansión de la educación pública?",
+    options: ["Propició la formación cívica en las escuelas.", "Aseguró la participación política de la clase media.", "Consolidó el ingreso de las mujeres a la universidad.", "Promovió la masificación de la migración campo-ciudad."],
+    explanation: "La expansión de la educación pública durante la República Conservadora contribuyó a la formación cívica de los estudiantes." },
+  { id: "q28", eje: "Historia de Chile", dificultad: "dificil", correct: 1,
+    question: "Los estudiantes de un curso deben recrear un debate político situado en el periodo de formación de la República en Chile. Considerando las ideas predominantes en los grupos políticos de la época, ¿cuál es un argumento que debe utilizar el grupo que defiende las ideas de la facción federal?",
+    options: ["La organización federal homogeniza las identidades locales.", "La organización federal contribuye a la distribución del poder.", "La organización federal abarata el costo de la administración pública.", "La organización federal favorece la uniformidad en el cobro de impuestos."],
+    explanation: "El argumento central de los federalistas era que ese modelo de organización contribuye a distribuir el poder político en lugar de concentrarlo." },
+  { id: "q30", eje: "Historia de Chile", dificultad: "dificil", correct: 0,
+    question: "Lee el siguiente extracto de una carta del líder sindical Luis Emilio Recabarren, publicada en el periódico El Trabajo, el 23 de febrero de 1902: «Veinte años ha que ustedes trabajan para engordar a los verdugos y hasta hoy no ha habido un hombre en el Congreso capaz de hacer cesar este estado de cosas. La experiencia de los años debe marcar para ustedes una nueva conducta para el porvenir. Nunca más al servicio de los amos, de los patrones, de los ricos. Trabajemos, pero para nosotros. La huelga iniciada ahí es el primer paso, ya no es posible retroceder, la marcha está emprendida, debe llegarse hasta el fin de la jornada». Considerando el contexto histórico en que fue escrita esta carta, ¿por qué las autoridades de la época se oponían a estas ideas?",
+    options: ["Porque incitaban a la alteración del orden establecido.", "Porque promovían el pensamiento liberal entre los obreros.", "Porque favorecían a los candidatos de oposición al gobierno.", "Porque fomentaban el nacionalismo en los sectores populares."],
+    explanation: "Las autoridades de la época veían en el discurso obrero un llamado a alterar el orden social y político establecido." },
+  { id: "q32", eje: "Historia de Chile", dificultad: "dificil", correct: 1,
+    question: "La riqueza salitrera trajo a Chile un aumento de los ingresos fiscales y también bonanza para un grupo de la población que se enriqueció con esta actividad. Al respecto, ¿de qué forma se evidenció esta situación en la realidad de la elite de la época?",
+    options: ["En la renuncia a la posesión de sus tierras.", "En la construcción de palacios de estilo europeo.", "En el abandono de los centros urbanos históricos.", "En la creación de organizaciones de ayuda mutua."],
+    explanation: "La riqueza generada por el salitre se evidenció, entre otras cosas, en la construcción de palacios y mansiones de estilo europeo por parte de la elite." },
+  { id: "q35", eje: "Historia Universal", dificultad: "dificil", correct: 0,
+    question: "Como consecuencia de la crisis ocasionada por la Gran Depresión surgieron nuevos modelos económicos en Europa y América Latina aplicados a escala nacional, los cuales modificaron la realidad socioeconómica entre las décadas de 1930 y 1950. ¿Cuál fue una característica común de estos modelos en ambos continentes durante dicho periodo?",
+    options: ["La implementación de estrategias de desarrollo industrial.", "La eliminación de las barreras arancelarias a las importaciones.", "La fijación de un sistema de gestión centralizada de la producción.", "La instauración de políticas de integración en mercados regionales."],
+    explanation: "Tras la Gran Depresión, tanto en Europa como en América Latina se impulsaron estrategias de desarrollo industrial como respuesta a la crisis." },
+  { id: "q36", eje: "Historia Universal", dificultad: "dificil", correct: 0,
+    question: "Lee el siguiente texto sobre el fascismo: «Hay que reconocer, sin embargo, que el fascismo presentaba algunas importantes ventajas para el capital que no tenían otros regímenes. En primer lugar, eliminó o venció a la revolución social izquierdista y pareció convertirse en el principal bastión contra ella». Hobsbawm, E. (1996). Historia del siglo XX. El fascismo fue una ideología que tuvo su auge en Europa en la primera mitad del siglo XX, ¿qué rasgo característico de dicha ideología se expresa en el párrafo citado?",
+    options: ["El impulso a un anticomunismo explícito.", "El rechazo al sistema político de tipo liberal.", "La existencia de un régimen de partido único.", "La preferencia por una economía centralizada."],
+    explanation: "El anticomunismo explícito fue uno de los rasgos que hizo del fascismo un régimen atractivo para ciertos sectores frente a la amenaza revolucionaria." },
+  { id: "q37", eje: "Historia Universal", dificultad: "dificil", correct: 1,
+    question: "Lee el siguiente texto que recoge algunas características de los populismos latinoamericanos de la primera mitad del siglo XX: «Uno de los principales problemas de la región, era la incapacidad de los estados de América Latina para limitar la influencia de actores externos y para dirigir la actividad económica de suerte que promoviera un desarrollo económico de base amplia. […] Así, las elites populistas buscaron controlar al Estado y usarlo para debilitar el poder de la oligarquía local, reestructurar las relaciones económicas externas e intervenir en la economía para superar el modelo». Malloy, J. (Ed.) (1977). Autoritarismo y corporativismo en América Latina: el patrón modal. Considerando el contexto histórico y lo descrito en la cita, ¿cuál fue un planteamiento de los regímenes populistas en el ámbito económico?",
+    options: ["Incentivar la apertura de la economía al comercio internacional.", "Priorizar el liderazgo del sector público en la gestión productiva.", "Defender las formas tradicionales de organización de la producción.", "Aplicar estrategias liberales para dinamizar los mercados nacionales."],
+    explanation: "Los regímenes populistas latinoamericanos priorizaron el liderazgo del Estado en la gestión productiva para reducir la dependencia externa." },
+  { id: "q40", eje: "Historia Universal", dificultad: "dificil", correct: 3,
+    question: "El populismo se desarrolló en América Latina a partir de la primera mitad del siglo XX, con ejemplos como la administración de Juan Domingo Perón en Argentina y la de Getulio Vargas en Brasil. Respecto de su implementación, ¿cuál fue uno de los factores que favorecieron el surgimiento de estos regímenes en las décadas de 1940 y 1950?",
+    options: ["La creación de un modelo de desarrollo hacia afuera.", "La masificación de diversos movimientos guerrilleros.", "El desprestigio de las dictaduras militares de derecha.", "El descrédito de los representantes de la clase política."],
+    explanation: "El desprestigio de la clase política tradicional abrió espacio para el surgimiento de liderazgos populistas como los de Perón y Vargas." },
+  { id: "q42", eje: "Historia Universal", dificultad: "dificil", correct: 1,
+    question: "Lee el siguiente texto que recoge algunas ideas defendidas por el nazismo durante la primera mitad del siglo XX: «El Estado no es un fin en sí mismo, sino un medio. El Estado condiciona el desarrollo de una civilización humana superior, pero no es la causa directa. Aquella reside esencialmente en la existencia de una raza apta para la civilización. Nosotros, los nacionalsocialistas, debemos establecer una distinción bien marcada entre el Estado, que es el continente, y la raza, que es el contenido. El continente no tiene razón de ser si no es capaz de conservar y de preservar su contenido». Hitler, A. (1924). Mi Lucha. Como se citó en Prats, J. (1996). Historia del Mundo Contemporáneo. Considerando la trayectoria del régimen nazi que gobernó Alemania entre 1933 y 1945, ¿cuál fue una acción del régimen basada en las ideas contenidas en el texto?",
+    options: ["La implementación de una política de Estado antiparlamentarista.", "La persecución del Estado a determinados grupos minoritarios.", "La puesta en marcha de una policía secreta por parte del Estado.", "La reunificación territorial para reconstruir el Estado fragmentado."],
+    explanation: "Coherente con su ideología racial, el régimen nazi llevó a la práctica la persecución sistemática de grupos minoritarios." },
+  { id: "q43", eje: "Historia Universal", dificultad: "dificil", correct: 3,
+    question: "Tras el término de la Segunda Guerra Mundial en 1945, Estados Unidos asumió un nuevo rol en el escenario geopolítico internacional, el cual se manifestó de distintas maneras, entre las que se cuenta la implementación del Plan Marshall. ¿Cuál fue uno de los mecanismos de este plan que contribuyó a fortalecer la posición hegemónica de Estados Unidos a escala mundial?",
+    options: ["La desmilitarización de los territorios de la esfera soviética.", "El financiamiento de dictaduras militares en América Latina.", "El fomento a la descolonización de diversas naciones africanas.", "La entrega de créditos a países europeos devastados por el conflicto."],
+    explanation: "El Plan Marshall entregó créditos a los países europeos devastados por la guerra, fortaleciendo con ello la influencia estadounidense en la región." },
+  { id: "q45", eje: "Historia Universal", dificultad: "dificil", correct: 1,
+    question: "Lee el siguiente extracto del discurso del presidente de Estados Unidos en 1947: «Uno de los objetivos fundamentales de la política exterior de Estados Unidos es la creación de condiciones en las cuales nosotros y otras naciones podamos forjar una manera de vivir libre de coacción. […] Sin embargo, no alcanzaremos nuestros objetivos a menos que estemos dispuestos a ayudar a los pueblos libres a preservar sus instituciones libres y su integridad nacional frente a los movimientos agresivos que tratan de imponerles regímenes totalitarios». Truman, H. (1947). Discurso del presidente Truman ante el Congreso de los Estados Unidos [Discurso principal]. A partir del texto citado y considerando el contexto de la época, ¿cuál fue la postura de Estados Unidos en el proceso de configuración del nuevo orden internacional de posguerra?",
+    options: ["La conciliación ideológica con los países bajo el poderío soviético.", "El respeto por la autodeterminación de los países a escala mundial.", "El control de la organización que regulaba las relaciones entre los países.", "La eliminación de las divisiones territoriales existentes entre países afines."],
+    explanation: "Truman planteó que Estados Unidos debía apoyar a los pueblos libres a preservar su autodeterminación frente al avance de regímenes totalitarios." },
+  { id: "q46", eje: "Historia Universal", dificultad: "dificil", correct: 2,
+    question: "La Segunda Guerra Mundial debilitó económica y políticamente a algunas potencias coloniales europeas, provocando una reconfiguración del escenario geopolítico internacional. En este contexto, ¿qué consecuencia política provocó el término de este conflicto bélico en Asia?",
+    options: ["La integración de un bloque político continental para equilibrar el poder con Occidente.", "La caída de los regímenes comunistas que existían en la región para adoptar el capitalismo.", "La movilización de las naciones dominadas para acelerar sus procesos de independencia.", "La expansión del fascismo en los países de Oriente para combatir la democracia liberal."],
+    explanation: "El debilitamiento de las potencias coloniales tras la guerra aceleró los procesos de independencia de las naciones dominadas en Asia." },
+  { id: "q47", eje: "Historia de Chile", dificultad: "dificil", correct: 2,
+    question: "Lee el siguiente texto que caracteriza a la sociedad chilena de mediados del siglo XX: «La década de los cincuenta fue una época de gran crecimiento poblacional. La población que en 1950 alcanzaba los 5,9 millones, en 1960 había trepado a los 7,4 millones. Además, se convirtió en una sociedad fuertemente urbana […]. Conservaba, sin embargo, un esquema tradicional de estratificación: la clase alta representaba alrededor de un 10 %, la clase media constituía un 15 % y el 75 % restante lo conformaba la clase baja». Fazio, H. (2004). La globalización en Chile: entre el Estado y la sociedad de mercado. En la sociedad de la época, ¿qué efecto provocó la situación descrita en el texto?",
+    options: ["La reubicación estatal de la población en la periferia.", "La falta de espacio para la construcción de viviendas.", "La agudización del déficit habitacional en las ciudades.", "La decadencia de los sistemas de subsidio a la vivienda."],
+    explanation: "El fuerte crecimiento poblacional y la urbanización acelerada de mediados del siglo XX agudizaron el déficit habitacional en las ciudades chilenas." },
+  { id: "q48", eje: "Historia de Chile", dificultad: "dificil", correct: 3,
+    question: "Lee el siguiente texto relacionado con las condiciones laborales en el medio rural hacia mediados del siglo XX en Chile: «Soy casada y madre de cuatro hijos chicos, mi marido hace dos años está empleado en este fundo […]. Mi marido fue ayer a presentarse a la Oficina del Trabajo y el patrón amenaza que nada le servirá porque en la oficina de la Caja hay un pariente de él. […] Este señor comete cosas contrarias a las leyes. Tiene la mitad de los trabajadores sin inscribir en el Seguro Obligatorio […]. Si ustedes pudieran mandar a un empleado que no se viniera a dar las manos al patrón y registraran los libros de los que tiene asegurados, no hallarán ni la mitad». Garrido, M. (1940). [Carta al Instituto de Información Campesina]. De acuerdo con lo planteado en el texto y considerando el contexto histórico, ¿cuál fue un factor que contribuyó a agudizar la precariedad de las condiciones de vida?",
+    options: ["La ausencia de leyes destinadas a regular las relaciones laborales.", "El escaso interés de los trabajadores por conocer las leyes laborales.", "El desacuerdo de los inquilinos con las leyes laborales de sindicalización.", "La debilidad del Estado para fiscalizar el cumplimiento de las leyes laborales."],
+    explanation: "La debilidad del Estado para fiscalizar el cumplimiento de las leyes laborales agravaba la precariedad de las condiciones de vida en el campo." },
+  { id: "q50", eje: "Historia de Chile", dificultad: "dificil", correct: 0,
+    question: "Lee el siguiente texto sobre las condiciones salariales de un sector de la población chilena a mediados del siglo XX: «En definitiva, vemos que la historia que nos entregan los salarios es una de bajo crecimiento y gran inestabilidad, marcada por ingresos que no hacían más que volver al punto cero los incrementos logrados. También observamos como el modelo de industrialización fue insuficiente para la promesa de desarrollo y mejoras en el bienestar para el sector obrero, y que estas no vinieron por el lado de la distribución de las ganancias del crecimiento sino a través de políticas sociales». Reyes, N. (2022). El pan de cada día. Salarios diarios y la distribución de las ganancias del crecimiento durante la industrialización en Chile, 1929-1975. Considerando el contexto de la época aludida, ¿cuál fue uno de los efectos generados a partir de la situación planteada en el texto?",
+    options: ["La pérdida constante del poder de compra de los trabajadores producto de la inflación.", "La disminución del interés de los trabajadores por participar en instancias de carácter sindical.", "La reducción de la presencia de los trabajadores en las iniciativas gubernamentales.", "La caída paulatina de la empleabilidad de los trabajadores en el sector manufacturero nacional."],
+    explanation: "El bajo crecimiento salarial junto a la inestabilidad económica se tradujo en una pérdida constante del poder de compra de los trabajadores." },
+  { id: "q52", eje: "Historia de Chile", dificultad: "dificil", correct: 2,
+    question: "Lee el siguiente texto que se refiere al quiebre de la democracia en Chile en 1973: «La diferencia esencial es que ocurría en la época de la política moderna y de masas, en la época –sin ir más lejos– de los medios de comunicación masivos, con lo cual difícilmente había alguien en el país que no se viera afectado o ignorara lo que estaba ocurriendo. Las familias estaban divididas; antiguas amistades habían llegado a un punto de ruptura; todo el mundo perdía la cabeza. Hubo un momento en que muchas de las virtudes chilenas tradicionales, especialmente la virtud de la convivencia, esa capacidad para respetar puntos de vista diferentes, parecían totalmente en retroceso». Collier, S. et al. (1998). Historia de Chile, 1808-1994. De acuerdo con el texto, ¿cuál fue una de las causas del quiebre de la democracia?",
+    options: ["La pérdida de prácticas políticas partidistas.", "La aparición de ideologías políticas foráneas.", "La polarización política existente en la sociedad.", "La ausencia de medios de comunicación oficialistas."],
+    explanation: "La fuerte polarización política que dividía a la sociedad chilena fue una de las causas centrales del quiebre democrático de 1973." },
+  { id: "q53", eje: "Historia de Chile", dificultad: "dificil", correct: 1,
+    question: "Una de las características del modelo neoliberal implementado durante la Dictadura Militar, consistió en la vinculación del proceso de regionalización impulsado por la Comisión Nacional de Reforma Administrativa (CONARA) con la promoción del potencial económico de los diversos territorios de Chile. En ese sentido ¿cuál fue el objetivo económico de dicha vinculación?",
+    options: ["Facilitar la intervención directa del Estado en la producción de materias primas estratégicas.", "Fomentar el desarrollo mediante la explotación privada de los recursos naturales disponibles.", "Potenciar la industrialización sustitutiva a partir de insumos derivados de las actividades extractivistas.", "Diversificar nuevos polos productivos mediante la redistribución de la población a lo largo del país."],
+    explanation: "La regionalización impulsada por la CONARA buscaba fomentar el desarrollo económico mediante la explotación privada de los recursos naturales de cada territorio." },
+  { id: "q55", eje: "Historia de Chile", dificultad: "dificil", correct: 3,
+    question: "Una de las características de la Dictadura en Chile (1973-1990) fue la sistemática violación de los derechos humanos. ¿Cuál fue una de las formas usadas por el régimen para cometer estas acciones?",
+    options: ["La conformación de un sistema político de partido único.", "La clausura de los tribunales de justicia a lo largo del país.", "La creación de brigadas juveniles paramilitares obligatorias.", "La implementación de organismos represivos de inteligencia."],
+    explanation: "La dictadura recurrió a organismos represivos de inteligencia como uno de sus principales instrumentos para violar sistemáticamente los derechos humanos." },
+  { id: "q56", eje: "Historia de Chile", dificultad: "dificil", correct: 3,
+    question: "El proceso de recuperación de la democracia chilena en 1990 fue el resultado de la suma de diversos factores que se desarrollaron durante los años previos. En el contexto de la década de 1980, ¿cuál fue uno de los factores sociopolíticos que favorecieron este proceso?",
+    options: ["La desarticulación interna de las Fuerzas Armadas.", "La falta de actores sociales que ejercieran un rol mediador.", "La debilidad de los referentes ideológicos utilizados por el régimen.", "La presión ejercida sobre el régimen por la comunidad internacional."],
+    explanation: "La presión de la comunidad internacional sobre el régimen fue uno de los factores sociopolíticos que impulsaron el retorno a la democracia." },
+
+  { id: "q58", eje: "Economía", dificultad: "dificil", correct: 2,
+    question: "En el contexto de una crisis sanitaria a nivel mundial, las economías de los diferentes países se ven impactadas por fenómenos que intervienen directamente sobre sus dinámicas, siendo uno de ellos la inflación. Al respecto, ¿cuál es un factor que incide en el desarrollo de un proceso inflacionario en el contexto señalado?",
+    options: ["La tendencia a la consolidación de prácticas monopólicas.", "La disminución de la capacidad adquisitiva de la población.", "La creciente incertidumbre sobre el abastecimiento de bienes.", "La concentración de la producción en bienes de primera necesidad."],
+    explanation: "La incertidumbre sobre el abastecimiento de bienes durante una crisis sanitaria es un factor que puede acelerar procesos inflacionarios." },
+  { id: "q59", eje: "Economía", dificultad: "dificil", correct: 2,
+    question: "En una economía de libre mercado la colusión es un fenómeno que altera el comportamiento esperado del mercado de acuerdo con la ley de oferta y demanda. Al respecto, ¿cuál es uno de los efectos de este fenómeno en el mercado?",
+    options: ["Propicia una reducción de los precios.", "Desincentiva la aplicación de impuestos.", "Debilita la competencia entre los actores.", "Fomenta un aumento excesivo de la demanda."],
+    explanation: "La colusión entre actores de mercado debilita la competencia, alterando el funcionamiento esperado de la oferta y la demanda." },
+  { id: "q60", eje: "Economía", dificultad: "dificil", correct: 2,
+    question: "Lee el siguiente texto sobre la economía circular: «La economía circular es un modelo de producción y consumo que implica compartir, alquilar, reutilizar, reparar, renovar y reciclar materiales y productos existentes todas las veces que sea posible para crear un valor añadido». Parlamento Europeo (24 de mayo de 2023). Economía circular: definición, importancia y beneficios. A partir de lo descrito en el texto, ¿cuál de las siguientes situaciones es coherente con la economía circular?",
+    options: ["La adquisición de productos innovadores.", "La realización de compras a través de internet.", "La distribución de bebida en envases retornables.", "La preferencia por la emisión de boletas electrónicas."],
+    explanation: "El uso de envases retornables encaja con el principio de reutilización que caracteriza a la economía circular." },
+  { id: "q62", eje: "Economía", dificultad: "dificil", correct: 0,
+    question: "Lee el siguiente texto sobre la Organización Internacional del Trabajo (OIT): «[…] la Organización Internacional del Trabajo (OIT) se ha creado en especial para mejorar las condiciones de trabajo y promover la libertad sindical en el interior de los diferentes países. De aquí resulta que las materias tratadas por la OIT a este respecto no correspondan ya al dominio reservado de los Estados y que la acción que emprende la OIT a ese fin no puede ser considerada como una intervención en los asuntos internos, puesto que entra dentro del marco del mandato que la OIT ha recibido de sus miembros con miras a alcanzar los objetivos que le han sido asignados». Oficina Internacional del Trabajo (2018). La Libertad Sindical. Recopilación de decisiones y principios del Comité de Libertad Sindical del Consejo de Administración de la OIT. Según lo planteado en el texto, ¿cuál es un rasgo que vincula a la OIT con la defensa de los derechos laborales?",
+    options: ["El carácter universal que poseen estos derechos.", "El conflicto de estos derechos con el comercio exterior.", "La negativa de los gobiernos a respetar estos derechos.", "La adecuación de los derechos a las realidades nacionales."],
+    explanation: "La OIT defiende los derechos laborales entendiéndolos como derechos de carácter universal, válidos más allá de las fronteras nacionales." },
+  { id: "q63", eje: "Economía", dificultad: "dificil", correct: 3,
+    question: "Lee el siguiente texto que se refiere a la ocupación informal en Chile durante el trimestre abril-junio de 2022: «Las personas ocupadas informales se incrementaron tanto entre las mujeres (20,0%) como en los hombres (11,0%) y, según grupos de edad, lo hicieron principalmente en los tramos 45-54 años (26,0%) y 65 años y más (29,7%) […]. Por su parte, las mayores tasas de ocupación informal se consignaron en las personas trabajadoras por cuenta propia (69,0%) y personal de servicio doméstico (51,1%)». INE (2022). Tasa de ocupación informal aumentó interanualmente y llegó a 27,1% en el trimestre abril-junio de 2022. ¿De qué manera el comportamiento del empleo informal descrito en el texto afecta al mercado del trabajo chileno?",
+    options: ["Impide el crecimiento de los sectores productivos.", "Aumenta la tasa de cesantía de la población juvenil.", "Disminuye la diversidad de actividades económicas.", "Reduce la capacidad de recaudación de la seguridad social."],
+    explanation: "El alto nivel de empleo informal reduce la base de trabajadores que cotiza, afectando la capacidad de recaudación de la seguridad social." },
+  { id: "q64", eje: "Economía", dificultad: "dificil", correct: 1,
+    question: "Lee el siguiente texto referente a la sindicalización en Chile: «¿Qué han hecho los sindicatos en ese contexto? A pesar de su desfavorable posición, han pujado por poner en el centro el derecho al trabajo digno tanto a nivel de gobierno como empresas. […] Estas acciones demuestran que los sindicatos son indispensables para el desarrollo de un debate que ponga en el centro la discusión sobre quiénes deben pagar los costos de la crisis y cómo se puede resguardar la estabilidad económica sin que ello afecte la calidad de vida de millones de trabajadores y trabajadoras del país». Pérez Ahumada, P. (2020). Sindicatos en tiempos de crisis: reviven pero son ignorados por la autoridad. CiperChile. A partir de lo expuesto en el texto, y considerando la institucionalidad vigente que regula el mercado del trabajo, ¿cuál es una de las funciones que cumplen los sindicatos?",
+    options: ["Organizan la actividad político partidaria desarrollada por los empleados.", "Representan los intereses de sus asociados en negociaciones colectivas.", "Reglamentan las relaciones laborales acordadas en la firma de un contrato.", "Evalúan la legalidad de las políticas públicas en materia de seguridad social."],
+    explanation: "Representar a sus asociados en las negociaciones colectivas es una de las funciones centrales de los sindicatos." }
+];
+
+// ---- Preguntas originales, redactadas por Claude en el mismo estilo/formato
+// PAES (enunciado con contexto + 4 alternativas), pero con contenido propio —
+// no reproducen ninguna pregunta oficial del DEMRE. Sirven para practicar
+// desde ya, mientras completas las oficiales de arriba. ----
+const PRACTICE_QUESTIONS = [
+  { id: "o1", eje: "Historia de Chile", correct: 2, dificultad: "dificil",
+    question: "Tras la Guerra del Pacífico (1879-1884), Chile incorporó los territorios salitreros de Tarapacá y Antofagasta. Durante las décadas siguientes, el Estado financió una parte creciente de su presupuesto con los impuestos a la exportación de este mineral, sin desarrollar en paralelo una industria manufacturera propia de peso. ¿Qué efecto tuvo esta incorporación en la economía chilena de fines del siglo XIX?",
+    options: ["Redujo la dependencia fiscal de las exportaciones al diversificar los ingresos del Estado", "Impulsó de forma sostenida la industrialización manufacturera del país", "Convirtió al salitre en la principal fuente de ingresos del Estado, profundizando la dependencia de un solo producto", "Diversificó ampliamente la matriz productiva nacional hacia bienes de mayor valor agregado"],
+    explanation: "Los impuestos a la exportación del salitre pasaron a financiar gran parte del presupuesto fiscal chileno, dando origen al llamado 'ciclo del salitre', sin que el país diversificara su producción — todo lo contrario a lo que sugieren las demás alternativas." },
+  { id: "o2", eje: "Historia de Chile", correct: 3, dificultad: "dificil",
+    question: "La Guerra Civil de 1891 enfrentó al presidente Balmaceda con el Congreso por el control del gasto público y las atribuciones del Ejecutivo, dando paso posteriormente a la llamada República Parlamentaria. A diferencia del período previo, donde el Presidente concentraba amplias facultades, ¿qué característica definió a este nuevo período (1891-1925)?",
+    options: ["El fortalecimiento del poder presidencial sobre el Congreso, revirtiendo la tendencia previa a 1891", "La consolidación de un sistema bipartidista estable que redujo la rotación ministerial", "La centralización de la administración en torno al Ejecutivo, replicando el modelo anterior a 1891", "El predominio del Congreso por sobre el Poder Ejecutivo, con alta rotación de gabinetes ministeriales"],
+    explanation: "Durante la República Parlamentaria, el Congreso concentró gran parte del poder político, invirtiendo la relación de fuerzas previa y generando alta inestabilidad ministerial — justo lo opuesto de lo que plantean las otras alternativas." },
+  { id: "o3", eje: "Historia de Chile", correct: 0, dificultad: "dificil",
+    question: "En 1938 asumió el gobierno el Frente Popular, una coalición de partidos de centro e izquierda que llegó al poder en un contexto de crisis del modelo agroexportador tras la Gran Depresión. Buscando revertir esa dependencia externa, ¿cuál fue uno de los ejes centrales de su programa de gobierno?",
+    options: ["El impulso a la industrialización mediante la creación de CORFO, para sustituir importaciones", "La ampliación del modelo agroexportador tradicional como principal fuente de divisas", "La reducción de la participación sindical en las decisiones económicas del nuevo gobierno", "La continuidad del modelo económico liberal previo, sin modificaciones sustantivas"],
+    explanation: "La Corporación de Fomento de la Producción (CORFO), creada en 1939, fue el principal instrumento del Frente Popular para fomentar la industrialización nacional, rompiendo justamente con el modelo agroexportador y liberal que las otras alternativas describen como continuidad." },
+  { id: "o4", eje: "Historia de Chile", correct: 1, dificultad: "dificil",
+    question: "La Reforma Agraria, iniciada tímidamente en el gobierno de Jorge Alessandri y profundizada por Frei Montalva y Allende, buscó modificar una estructura de propiedad rural donde una minoría de grandes propietarios concentraba la mayor parte de la tierra cultivable. ¿Cuál fue uno de sus objetivos principales?",
+    options: ["Aumentar la extensión promedio de los latifundios productivos existentes", "Redistribuir tierras expropiadas a campesinos y cooperativas, revirtiendo esa concentración", "Fortalecer el control de las grandes haciendas sobre la mano de obra rural disponible", "Frenar el proceso de sindicalización campesina que ya se había iniciado en los años 60"],
+    explanation: "La Reforma Agraria buscó expropiar latifundios y redistribuir tierras entre campesinos, exactamente lo contrario de fortalecer la concentración de tierras o frenar la sindicalización, que en realidad se impulsó junto con la reforma." },
+  { id: "o5", eje: "Historia de Chile", correct: 2, dificultad: "dificil",
+    question: "El plebiscito de 1988 preguntó a la ciudadanía si aprobaba la continuidad de Augusto Pinochet en el poder por un nuevo período de ocho años. El triunfo de la opción 'No' activó mecanismos ya contemplados en la propia Constitución de 1980 para ese escenario, sin que ello implicara redactar un texto constitucional enteramente nuevo. ¿Cuál fue la consecuencia política directa de este resultado?",
+    options: ["La convocatoria inmediata a una asamblea constituyente para redactar una nueva Constitución", "La reforma sustancial e inmediata de la Constitución de 1980, promulgada ese mismo año", "El inicio de la transición hacia elecciones presidenciales abiertas, conforme a lo ya previsto", "La salida anticipada de las Fuerzas Armadas del gobierno ese mismo año 1988"],
+    explanation: "El triunfo del 'No' activó el mecanismo ya previsto en la Constitución de 1980 para convocar elecciones presidenciales abiertas, sin que existiera de inmediato una asamblea constituyente ni una salida anticipada del régimen ese mismo año." },
+  { id: "o6", eje: "Historia de Chile", correct: 0, dificultad: "dificil",
+    question: "La Constitución de 1980, elaborada durante el régimen militar y aprobada en un plebiscito realizado sin registros electorales ni condiciones de competencia política plena, ha sido objeto de múltiples reformas desde el retorno a la democracia. ¿Cuál fue uno de los argumentos frecuentes para exigir su reemplazo o reforma?",
+    options: ["Su origen no democrático, al haberse redactado y aprobado bajo un régimen dictatorial", "La falta de cualquier mecanismo legal para introducirle reformas parciales desde 1990", "La ausencia total de referencias a derechos ciudadanos en su texto original", "El haber sido derechamente rechazada por la ciudadanía en el plebiscito de 1980"],
+    explanation: "El cuestionamiento central ha sido su origen no democrático; de hecho, sí contenía derechos y fue aprobada (no rechazada) en 1980, y sí ha sido reformada legalmente en múltiples ocasiones desde entonces — lo que descarta las otras tres opciones." },
+
+  { id: "o7", eje: "Historia Universal", correct: 1, dificultad: "dificil",
+    question: "Tras la Segunda Guerra Mundial, numerosos territorios coloniales en África y Asia iniciaron procesos de independencia frente a metrópolis europeas que, apenas unos años antes, habían defendido con firmeza su dominio colonial. ¿Cuál fue uno de los factores que impulsó esta ola descolonizadora?",
+    options: ["El fortalecimiento económico de las potencias coloniales europeas tras el conflicto", "El debilitamiento político y económico de las metrópolis, que redujo su capacidad de sostener el control colonial", "El apoyo explícito y sostenido de las metrópolis a la autodeterminación de sus colonias", "La expansión de nuevos acuerdos comerciales coloniales impulsados tras 1945"],
+    explanation: "Las potencias europeas salieron debilitadas de la guerra, no fortalecidas, lo que redujo su capacidad de sostener el control colonial — y en general resistieron, no apoyaron, los procesos independentistas." },
+  { id: "o8", eje: "Historia Universal", correct: 3, dificultad: "dificil",
+    question: "La Revolución Francesa (1789) estuvo influida por las ideas de la Ilustración, que rompían con el orden estamental del Antiguo Régimen y que, décadas después, marcarían también el discurso independentista hispanoamericano. ¿Cuál de los siguientes principios ilustrados se reflejó en la Declaración de los Derechos del Hombre y del Ciudadano?",
+    options: ["La legitimidad del poder monárquico fundado en el derecho divino", "La organización de la sociedad en estamentos diferenciados según su origen", "La representación política reservada exclusivamente a la nobleza y el clero", "La igualdad de todos los ciudadanos ante la ley, sin distinción estamental"],
+    explanation: "La Declaración de 1789 consagró la igualdad ante la ley, rompiendo exactamente con el sistema estamental y el derecho divino que describen las otras tres opciones — idea que luego inspiraría a los procesos independentistas americanos." },
+  { id: "o9", eje: "Historia Universal", correct: 0, dificultad: "dificil",
+    question: "La caída del Muro de Berlín en 1989 es considerada un hito simbólico del fin de la Guerra Fría, ocurrida más de cuarenta años después de que ambas Alemanias se constituyeran como Estados separados en 1949. ¿Qué proceso político posterior estuvo directamente vinculado a la caída del Muro?",
+    options: ["La reunificación de Alemania en 1990, poniendo fin a la división de posguerra", "La creación de la República Federal Alemana, ocurrida cuatro décadas antes de ese hito", "El ingreso de Alemania Oriental a la OTAN, alianza del bloque opuesto durante la Guerra Fría", "La firma de un nuevo Pacto de Varsovia entre ambas Alemanias tras la caída del Muro"],
+    explanation: "La caída del Muro aceleró la reunificación alemana de 1990; las demás opciones describen hechos anteriores a 1989, del bloque opuesto, o un pacto que en realidad se disolvió en esos mismos años, no se renovó." },
+  { id: "o10", eje: "Historia Universal", correct: 2, dificultad: "dificil",
+    question: "Antes de los procesos de descolonización de mediados del siglo XX, las potencias europeas habían expandido su dominio colonial sobre África y Asia durante el siglo XIX, en plena etapa de industrialización acelerada en Europa. ¿Qué motivación económica explica principalmente esa expansión colonial previa?",
+    options: ["El interés por reducir la competencia comercial entre las propias metrópolis europeas", "La necesidad de limitar el crecimiento de la naciente industria europea", "La búsqueda de materias primas y nuevos mercados para sostener esa industrialización", "El interés por desacelerar el uso de las rutas comerciales marítimas ya existentes"],
+    explanation: "La expansión colonial del siglo XIX buscó asegurar materias primas y mercados para las industrias europeas en pleno crecimiento — lo contrario de limitar esa industria o frenar el comercio marítimo, que en realidad se intensificó." },
+  { id: "o11", eje: "Historia Universal", correct: 1, dificultad: "dificil",
+    question: "La Revolución Rusa de 1917 puso fin al régimen zarista e instauró un gobierno de orientación socialista, en medio de la Primera Guerra Mundial, conflicto en el que Rusia combatía junto a Francia y Reino Unido como parte de los Aliados. ¿Cuál fue una de las consecuencias inmediatas de este proceso?",
+    options: ["La continuidad de Rusia en la Primera Guerra Mundial junto a sus antiguos aliados", "La salida de Rusia de la Primera Guerra Mundial mediante un tratado con Alemania", "La incorporación de la nueva Rusia soviética a la Sociedad de Naciones en 1918", "El fortalecimiento de la alianza militar de Rusia con Francia y Reino Unido"],
+    explanation: "El gobierno bolchevique firmó el Tratado de Brest-Litovsk en 1918 con Alemania, retirando a Rusia del conflicto y rompiendo -no fortaleciendo- su alianza previa con Francia y Reino Unido." },
+  { id: "o12", eje: "Historia Universal", correct: 3, dificultad: "dificil",
+    question: "La crisis del petróleo de 1973, originada por una decisión de países productores árabes de restringir su exportación a Occidente, afectó fuertemente a las economías industrializadas dependientes de este recurso importado. ¿Cuál fue una de sus consecuencias económicas más relevantes?",
+    options: ["Una baja sostenida en los precios de la energía en los países occidentales", "Una disminución generalizada de la inflación en las economías importadoras", "Un incremento inmediato del empleo industrial en Europa occidental", "Un fuerte aumento de la inflación en los países importadores de petróleo"],
+    explanation: "El alza abrupta del precio del petróleo generó estanflación (inflación con estancamiento) en los países importadores — no una baja de precios ni una mejora del empleo, que en realidad se deterioró." },
+
+  { id: "o13", eje: "Formación Ciudadana", correct: 1, dificultad: "dificil",
+    question: "En Chile, la Contraloría General de la República cumple un rol de control sobre los actos de la administración del Estado, a diferencia del Congreso, que concentra la función legislativa, y de los tribunales, que resuelven conflictos jurídicos. ¿Cuál es una de las funciones principales de la Contraloría?",
+    options: ["Legislar sobre materias presupuestarias del Estado, función propia del Congreso", "Fiscalizar la legalidad de los actos de la administración pública", "Representar al país en tribunales internacionales, función del Ejecutivo", "Administrar directamente los fondos de las municipalidades, que gestionan sus propios recursos"],
+    explanation: "La Contraloría fiscaliza la legalidad de los actos administrativos; las otras opciones confunden esa función con atribuciones que corresponden al Congreso, al Ejecutivo o a los propios municipios." },
+  { id: "o14", eje: "Formación Ciudadana", correct: 0, dificultad: "dificil",
+    question: "Un plebiscito y una elección parlamentaria son ambos mecanismos de participación electoral regulados por el mismo padrón y la misma institucionalidad electoral chilena. Sin embargo, ¿en qué se diferencia principalmente el plebiscito de una elección parlamentaria?",
+    options: ["Consulta a la ciudadanía sobre una materia específica, en vez de elegir representantes", "Permite votar únicamente a quienes ya participaron en elecciones parlamentarias previas", "Se convoca exclusivamente a nivel municipal dentro del sistema chileno", "Se rige por un padrón electoral distinto al utilizado en las elecciones parlamentarias"],
+    explanation: "La diferencia central es el objeto de la votación (una materia puntual, no representantes); ambos instrumentos comparten el mismo padrón electoral y ninguno restringe el voto según participación previa." },
+  { id: "o15", eje: "Formación Ciudadana", correct: 2, dificultad: "dificil",
+    question: "Los derechos humanos suelen clasificarse en generaciones según su origen histórico: los de 'primera generación' (civiles y políticos) surgieron con las revoluciones liberales de los siglos XVIII y XIX. ¿Cuál es una característica de los derechos de 'segunda generación', surgidos posteriormente?",
+    options: ["Se limitan a las libertades individuales de expresión y reunión, igual que los de primera generación", "Surgieron cronológicamente antes que los derechos civiles y políticos de primera generación", "Están orientados a garantizar derechos económicos, sociales y culturales, exigiendo un rol activo del Estado", "No requieren ningún tipo de acción del Estado para hacerse efectivos"],
+    explanation: "Los derechos de segunda generación (educación, salud, trabajo) surgieron después de los civiles y políticos, y a diferencia de estos, exigen un rol activo del Estado — no son solo libertades individuales ni se ejercen sin intervención estatal." },
+  { id: "o16", eje: "Formación Ciudadana", correct: 3, dificultad: "dificil",
+    question: "A diferencia del Poder Judicial, que resuelve conflictos aplicando la ley, o del Poder Ejecutivo, que administra el Estado, los partidos políticos ocupan un lugar distinto dentro del entramado institucional de una democracia representativa. ¿Cuál es una función central que cumplen estas organizaciones?",
+    options: ["Reemplazar al Poder Judicial en la resolución de conflictos legales entre privados", "Administrar de forma directa los recursos fiscales asignados al Estado", "Determinar unilateralmente, al margen de la ciudadanía, el resultado de los procesos electorales", "Canalizar y representar los intereses de distintos sectores de la ciudadanía ante el Estado"],
+    explanation: "Los partidos políticos median entre ciudadanía e instituciones estatales, representando intereses; no cumplen funciones judiciales, administrativas ni definen resultados electorales al margen de la votación ciudadana." },
+  { id: "o17", eje: "Formación Ciudadana", correct: 1, dificultad: "dificil",
+    question: "El concepto de 'sociedad civil' se utiliza frecuentemente en el análisis de los sistemas democráticos, en contraste con el aparato estatal y con el mercado, dos esferas que operan bajo lógicas distintas a las de este tercer sector. ¿A qué hace referencia este concepto?",
+    options: ["Al conjunto de instituciones que forman parte directa del aparato estatal", "Al conjunto de organizaciones y ciudadanos que actúan al margen del Estado y del mercado", "Al sistema de partidos políticos con representación parlamentaria vigente", "A las Fuerzas Armadas, en su rol de garantes del orden institucional del Estado"],
+    explanation: "La sociedad civil agrupa organizaciones (ONG, sindicatos, juntas de vecinos) independientes tanto del Estado como del mercado — a diferencia de instituciones estatales, partidos con representación o las Fuerzas Armadas, que sí forman parte del aparato estatal." },
+  { id: "o18", eje: "Formación Ciudadana", correct: 0, dificultad: "dificil",
+    question: "A diferencia del Servicio Electoral, que administra los procesos electorales, o del Congreso, que redacta y aprueba reformas constitucionales, el Tribunal Constitucional cumple un rol específico dentro del sistema institucional chileno. ¿Cuál es una de sus principales atribuciones?",
+    options: ["Resolver conflictos sobre la constitucionalidad de las leyes y proyectos de ley", "Supervisar directamente el desarrollo de los procesos electorales del país", "Proponer y redactar por iniciativa propia reformas constitucionales al Congreso", "Fiscalizar el gasto presupuestario específico de los gobiernos regionales"],
+    explanation: "El Tribunal Constitucional revisa la constitucionalidad de normas; administrar elecciones, redactar reformas o fiscalizar presupuestos regionales corresponden a otras instituciones (Servicio Electoral, Congreso, Contraloría)." },
+
+  { id: "o19", eje: "Economía", correct: 2, dificultad: "dificil",
+    question: "El Banco Central de Chile puede subir o bajar la tasa de interés de política monetaria según el objetivo de controlar la inflación, entendiendo que esta tasa influye en el costo del crédito para hogares y empresas, no en el tipo de cambio de forma directa e inmediata. ¿Qué efecto se espera si el Banco Central sube esta tasa en un contexto de alta inflación?",
+    options: ["Un aumento en el consumo y la inversión de los hogares, por el mayor costo del crédito", "Una mayor disposición de los bancos a otorgar créditos a tasas más bajas", "Un desincentivo al consumo, derivado del encarecimiento del crédito, que ayuda a contener la inflación", "Una reducción inmediata y directa del tipo de cambio internacional del país"],
+    explanation: "Subir la tasa encarece el crédito y desincentiva el consumo, moderando la inflación — el efecto principal opera sobre el consumo/crédito, no de forma directa e inmediata sobre el tipo de cambio, y ciertamente no facilita más créditos baratos." },
+  { id: "o20", eje: "Economía", correct: 1, dificultad: "dificil",
+    question: "Los sistemas económicos pueden clasificarse según cómo se resuelven las preguntas básicas de qué, cómo y para quién producir, existiendo modelos que van desde la planificación estatal total hasta el libre mercado sin regulación. ¿Qué caracteriza a un sistema de economía mixta, situado entre esos dos extremos?",
+    options: ["La ausencia de cualquier forma de propiedad privada sobre los medios de producción", "La combinación de mecanismos de mercado con distintos grados de intervención estatal", "La planificación centralizada de toda la producción nacional por parte del Estado", "La inexistencia total de regulación estatal sobre la actividad económica"],
+    explanation: "La economía mixta combina mercado e intervención estatal en grados variables — no elimina la propiedad privada ni la regulación, ni tampoco planifica de forma centralizada toda la producción como en un extremo puro." },
+  { id: "o21", eje: "Economía", correct: 0, dificultad: "dificil",
+    question: "La balanza comercial de un país registra la diferencia entre el valor de sus exportaciones y sus importaciones en un período determinado, siendo un indicador distinto del tipo de cambio, aunque ambos suelen mencionarse juntos en el análisis del sector externo. ¿Qué significa que un país tenga superávit comercial?",
+    options: ["Que sus exportaciones superan en valor a sus importaciones en ese período", "Que su moneda se ha depreciado frente al dólar durante ese mismo período", "Que ha reducido su volumen total de comercio exterior respecto de años anteriores", "Que sus importaciones superan en valor a sus exportaciones en ese período"],
+    explanation: "El superávit comercial es, por definición, que las exportaciones superan a las importaciones en valor; no describe el nivel del tipo de cambio ni una reducción del volumen comercial, que son fenómenos distintos." },
+  { id: "o22", eje: "Economía", correct: 3, dificultad: "dificil",
+    question: "Uno de los objetivos centrales del Banco Central de Chile es mantener la estabilidad de precios, tarea que se distingue de otras funciones económicas como la política fiscal (a cargo del gobierno) o la fijación del tipo de cambio (que en Chile es flotante, no fijo). ¿Por qué es relevante este objetivo de estabilidad de precios para la economía?",
+    options: ["Porque reemplaza por completo la necesidad de una política fiscal activa del gobierno", "Porque garantiza de forma automática niveles bajos de desempleo en la economía", "Porque fija de forma permanente el tipo de cambio del país frente al dólar", "Porque una inflación controlada facilita la planificación económica de hogares y empresas"],
+    explanation: "La estabilidad de precios ayuda a planificar mejor consumo, ahorro e inversión; no reemplaza la política fiscal, no garantiza automáticamente pleno empleo, y Chile mantiene un tipo de cambio flotante, no fijo." },
+  { id: "o23", eje: "Economía", correct: 2, dificultad: "dificil",
+    question: "Los impuestos pueden clasificarse en directos (que gravan renta o patrimonio según la capacidad económica de la persona) e indirectos (que gravan el consumo, independientemente del ingreso de quien compra). ¿Cuál de los siguientes es un ejemplo de impuesto indirecto en Chile?",
+    options: ["El Impuesto a la Renta de las personas naturales, que considera el nivel de ingreso", "El impuesto territorial que grava los bienes raíces según su avalúo", "El IVA (Impuesto al Valor Agregado), aplicado al consumo de bienes y servicios", "El impuesto que grava las herencias y donaciones según su monto"],
+    explanation: "El IVA grava el consumo por igual, sin considerar el ingreso del comprador, lo que lo hace indirecto; las otras tres opciones sí consideran renta, patrimonio o monto heredado, siendo impuestos directos." },
+  { id: "o24", eje: "Economía", correct: 1, dificultad: "dificil",
+    question: "El desempleo puede clasificarse según su causa en friccional (búsqueda temporal de empleo), estacional (varía según la época del año), cíclico (asociado a recesiones) y estructural. ¿Qué caracteriza específicamente al desempleo de tipo estructural?",
+    options: ["Se debe a la búsqueda temporal de un nuevo empleo tras dejar uno anterior", "Surge por un desajuste entre las habilidades de los trabajadores y las necesidades del mercado laboral", "Ocurre en rubros cuya demanda de trabajo varía según la temporada del año", "Se origina exclusivamente por una caída generalizada del gasto durante una recesión"],
+    explanation: "El desempleo estructural surge por un desajuste de competencias (por ejemplo, cambios tecnológicos), distinto del friccional (búsqueda temporal), el estacional (variación por temporada) o el cíclico (asociado a recesiones)." },
+
+  { id: "o25", eje: "Historia de Chile", correct: 1, dificultad: "dificil",
+    question: "La Constitución de 1833, impulsada por Diego Portales, ordenó políticamente a Chile durante casi un siglo, en contraste con la inestabilidad institucional que había caracterizado la década previa de ensayos constitucionales. ¿Cuál fue una de sus características centrales?",
+    options: ["Estableció un régimen parlamentario con un Congreso dominante sobre el Ejecutivo", "Consagró un presidencialismo fuerte y de carácter autoritario", "Redujo significativamente las atribuciones del Presidente de la República respecto de ensayos previos", "Otorgó amplia autonomía política a las provincias frente al poder central"],
+    explanation: "La Constitución de 1833 concentró amplias atribuciones en el Presidente, generando un modelo autoritario-presidencialista y centralizado — justo lo opuesto a un régimen parlamentario, a reducir el poder presidencial o a dar autonomía provincial." },
+  { id: "o26", eje: "Historia de Chile", correct: 3, dificultad: "dificil",
+    question: "Hacia fines del siglo XIX y comienzos del XX, en Chile emergió con fuerza la llamada 'Cuestión Social', en paralelo al auge salitrero y a la migración masiva de trabajadores hacia los centros mineros y urbanos. ¿A qué problemática hacía referencia específicamente este concepto?",
+    options: ["Al conflicto limítrofe pendiente con Perú y Bolivia tras la Guerra del Pacífico", "A la crisis de representatividad de los partidos políticos durante el parlamentarismo", "Al debate legislativo en torno a la separación de la Iglesia y el Estado", "A las precarias condiciones de vivienda, salud y trabajo de la población urbana y obrera"],
+    explanation: "La Cuestión Social apuntaba a las condiciones de vida de la población obrera y urbana (hacinamiento, insalubridad, explotación laboral), un fenómeno social y económico, distinto de los conflictos limítrofes, la crisis de representatividad política o el debate Iglesia-Estado." },
+  { id: "o27", eje: "Historia de Chile", correct: 0, dificultad: "dificil",
+    question: "La Constitución de 1925 puso fin al período parlamentario en Chile, revirtiendo el esquema en que el Congreso y sus gabinetes dependientes habían concentrado buena parte del poder político desde 1891. ¿Qué cambio institucional introdujo respecto del sistema vigente hasta entonces?",
+    options: ["Restableció un régimen presidencialista fuerte, devolviendo atribuciones al Ejecutivo", "Amplió aún más las atribuciones fiscalizadoras del Congreso sobre el gabinete ministerial", "Mantuvo el sistema de gabinetes responsables ante el Parlamento vigente desde 1891", "Trasladó buena parte del poder ejecutivo hacia los gobiernos provinciales"],
+    explanation: "La Constitución de 1925 devolvió atribuciones al Presidente, terminando —no ampliando ni manteniendo— el sistema de gabinetes dependientes del Congreso propio del parlamentarismo, y sin descentralizar el poder hacia las provincias." },
+  { id: "o28", eje: "Historia de Chile", correct: 2, dificultad: "dificil",
+    question: "Las Protestas Nacionales de 1983 marcaron un punto de inflexión en la oposición a la dictadura militar chilena, ocurridas en un momento en que los partidos políticos aún no tenían reconocimiento legal para operar abiertamente. ¿Qué factor contribuyó principalmente a su surgimiento?",
+    options: ["Un período de fuerte crecimiento económico y baja cesantía a inicios de los años 80", "Un acuerdo previo entre el régimen militar y los partidos de oposición para convocarlas", "La crisis económica y el descontento social crecientes de comienzos de esa década", "La reincorporación previa de los partidos políticos a la actividad legal reconocida"],
+    explanation: "Fue la crisis económica de inicios de los 80, no la bonanza, un acuerdo con el régimen ni la legalización previa de los partidos (que aún no ocurría), lo que impulsó estas movilizaciones sociales masivas." },
+  { id: "o29", eje: "Historia de Chile", correct: 1, dificultad: "dificil",
+    question: "La Guerra contra la Confederación Perú-Boliviana (1836-1839) enfrentó a Chile con esa alianza binacional, que representaba entonces un competidor comercial y naval en el Pacífico sudamericano. ¿Qué consecuencia tuvo el resultado de esta guerra para Chile?",
+    options: ["La pérdida temporal de su acceso al océano Pacífico durante el conflicto", "El fortalecimiento de su posición geopolítica y comercial en el Pacífico sudamericano", "La incorporación inmediata de territorio boliviano al territorio chileno", "El quiebre definitivo y permanente de las relaciones comerciales con Perú"],
+    explanation: "La victoria chilena disolvió la Confederación y consolidó a Chile como potencia comercial y naval regional, sin anexión territorial inmediata ni ruptura comercial permanente con Perú — y por supuesto sin perder su propio acceso al Pacífico." },
+
+  { id: "o30", eje: "Historia Universal", correct: 2, dificultad: "dificil",
+    question: "La unificación de Alemania (1864-1871) fue liderada por Prusia bajo el canciller Otto von Bismarck, en un proceso que incluyó tres guerras sucesivas (contra Dinamarca, Austria y Francia) además de intensa actividad diplomática. ¿Qué estrategia caracterizó principalmente este proceso?",
+    options: ["La negociación exclusivamente pacífica con las demás potencias europeas", "La disolución progresiva y voluntaria de los reinos alemanes existentes, sin intervención prusiana", "El uso combinado de la diplomacia y la fuerza militar, conocido como 'realpolitik'", "La mediación de Francia como garante externo del proceso de unificación"],
+    explanation: "Bismarck combinó diplomacia calculada con conflictos bélicos (no negociación exclusivamente pacífica, ni disolución voluntaria sin intervención, ni mediación francesa: Francia fue, de hecho, una de las potencias derrotadas en el proceso)." },
+  { id: "o32", eje: "Historia Universal", correct: 3, dificultad: "dificil",
+    question: "La Primera Guerra Mundial (1914-1918) tuvo un fuerte impacto en el orden político europeo, dejando un continente devastado económica y socialmente, con monarquías tradicionales que no lograron sobrevivir al conflicto (como en Rusia, Alemania y el Imperio Austrohúngaro). ¿Qué efecto tuvo este conflicto sobre el liberalismo decimonónico como modelo hegemónico?",
+    options: ["Lo consolidó como el único sistema político viable en la Europa de posguerra", "Aceleró su expansión pacífica hacia nuevas regiones del continente europeo", "Fortaleció principalmente a las monarquías tradicionales que gobernaban antes del conflicto", "Contribuyó a debilitarlo, abriendo paso a nuevas ideologías como el fascismo y el comunismo"],
+    explanation: "La devastación de la guerra deslegitimó al liberalismo tradicional y favoreció ideologías alternativas, mientras que varias monarquías tradicionales colapsaron durante o después del conflicto, en vez de fortalecerse." },
+  { id: "o33", eje: "Historia Universal", correct: 1, dificultad: "dificil",
+    question: "En 1945, tras el fin de la Segunda Guerra Mundial, se fundó la Organización de las Naciones Unidas (ONU) como sucesora de la fallida Sociedad de Naciones de entreguerras, buscando corregir las limitaciones de ese organismo previo. ¿Cuál fue el propósito principal de su creación?",
+    options: ["Consolidar el dominio militar de las potencias vencedoras sobre el resto del mundo", "Regular las relaciones internacionales y prevenir nuevos conflictos de alcance global", "Reemplazar a los gobiernos nacionales en la toma de decisiones internas de cada país", "Establecer un único ejército multinacional permanente bajo mando centralizado"],
+    explanation: "La ONU buscó fomentar la cooperación internacional y prevenir conflictos globales, sin reemplazar la soberanía de los Estados miembros ni consolidar el dominio militar de las potencias vencedoras como objetivo declarado." },
+  { id: "o34", eje: "Historia Universal", correct: 0, dificultad: "dificil",
+    question: "En 1948, la ONU adoptó la Declaración Universal de los Derechos Humanos, en un contexto marcado por las atrocidades recién vividas durante la Segunda Guerra Mundial. A diferencia de un tratado comercial o de una constitución nacional, ¿qué importancia histórica tuvo este documento?",
+    options: ["Estableció un marco común de derechos básicos aplicables a toda la humanidad", "Sustituyó formalmente las constituciones nacionales de los países firmantes", "Reguló de manera específica las relaciones comerciales entre los bloques de posguerra", "Tuvo aplicación jurídica vinculante exclusivamente dentro de Europa occidental"],
+    explanation: "La Declaración se convirtió en un referente ético y jurídico universal, sin sustituir constituciones nacionales, sin regular comercio, y sin limitarse geográficamente a Europa occidental." },
+  { id: "o35", eje: "Historia Universal", correct: 3, dificultad: "dificil",
+    question: "La Revolución Cubana de 1959, liderada por Fidel Castro, derivó en la ruptura de relaciones diplomáticas entre Cuba y Estados Unidos y en un giro hacia el bloque soviético durante la Guerra Fría. ¿Cuál fue uno de sus efectos en el resto de América Latina?",
+    options: ["La pérdida de vigencia de los movimientos de izquierda ya existentes en la región", "El fortalecimiento generalizado de los gobiernos liberales de tendencia pro estadounidense", "Un rápido y sostenido acercamiento diplomático entre Cuba y Estados Unidos en la década siguiente", "Convertirse en un referente e impulso para movimientos de izquierda en la región"],
+    explanation: "El triunfo cubano inspiró a movimientos de izquierda latinoamericanos, en vez de debilitarlos, y llevó a una ruptura -no un acercamiento- con Estados Unidos, sin fortalecer a los gobiernos liberales pro estadounidenses de la región." },
+  { id: "o36", eje: "Historia Universal", correct: 1, dificultad: "dificil",
+    question: "La Crisis de los Misiles de Cuba (1962), considerada el momento de mayor tensión de la Guerra Fría, ocurrió apenas un año después del fallido desembarco de Bahía de Cochinos (1961), organizado por Estados Unidos contra el gobierno cubano. ¿Qué originó específicamente la crisis de 1962?",
+    options: ["Un nuevo desembarco militar estadounidense, esta vez exitoso, en territorio cubano", "El despliegue de misiles nucleares soviéticos en territorio cubano", "La ruptura de relaciones diplomáticas entre la URSS y la República Popular China", "Un acuerdo comercial secreto suscrito entre Cuba y Estados Unidos en esos años"],
+    explanation: "La crisis de 1962 se originó por el despliegue de misiles soviéticos en Cuba, no por un nuevo desembarco militar exitoso (a diferencia del fallido intento de 1961), ni por asuntos entre la URSS y China, ni por ningún acuerdo con EE.UU." },
+  { id: "o37", eje: "Historia Universal", correct: 2, dificultad: "dificil",
+    question: "El golpe de Estado en Brasil (1964), que instauró una dictadura militar prolongada en ese país, antecedió en varios años a golpes similares en Chile (1973), Uruguay (1973) y Argentina (1976). ¿Qué fenómeno regional ejemplifica mejor esta secuencia de eventos?",
+    options: ["El fortalecimiento generalizado y sostenido de las democracias latinoamericanas de la época", "Un caso aislado, sin relación con otros procesos políticos ocurridos en la región", "La ola de regímenes autoritarios instaurados en América Latina durante la Guerra Fría", "El fin de la influencia política y económica de Estados Unidos sobre el continente"],
+    explanation: "El golpe brasileño fue el primero de una secuencia regional de dictaduras militares durante la Guerra Fría, no un hecho aislado, y ocurrió en un contexto de fuerte influencia (no de retirada) de Estados Unidos en la región." },
+  { id: "o38", eje: "Historia Universal", correct: 3, dificultad: "dificil",
+    question: "En 1991 se disolvió formalmente la Unión Soviética, poniendo fin a casi 45 años de confrontación bipolar con Estados Unidos que habían definido el orden internacional desde 1947. ¿Qué consecuencia tuvo este acontecimiento en el orden mundial posterior?",
+    options: ["El fortalecimiento del bloque comunista a escala global durante la década de 1990", "La creación de un nuevo bloque militar en Europa del Este como contrapeso a Occidente", "El recrudecimiento de la confrontación ideológica propia de la Guerra Fría", "El fin definitivo de la Guerra Fría y el auge del neoliberalismo y la globalización"],
+    explanation: "Con la desaparición de la URSS terminó -no se recrudeció- la confrontación bipolar, consolidándose Estados Unidos como potencia hegemónica y expandiéndose el modelo neoliberal, en vez de surgir un nuevo bloque militar rival en la región." }
+];
+
+// ---- Preguntas de dificultad ALTA: enunciados más largos, alternativas
+// todas plausibles a primera lectura (requieren descartar por matices,
+// no por ser obviamente absurdas) — estilo más cercano al DEMRE real. ----
+const HARD_QUESTIONS = [
+  { id: "h1", eje: "Historia de Chile", dificultad: "dificil", correct: 2,
+    question: "Durante el ciclo del salitre (1880-1930), el Estado chileno financió gran parte de su presupuesto con los impuestos a la exportación de este mineral, sin desarrollar de forma paralela una industria manufacturera propia significativa. ¿Qué concepto describe mejor esta situación económica?",
+    options: ["Un modelo de sustitución de importaciones consolidado", "Una diversificación productiva orientada al mercado interno", "Una dependencia estructural de las exportaciones de un solo recurso primario", "Una política de proteccionismo industrial exitosa"],
+    explanation: "La economía chilena de la época dependía casi exclusivamente de un producto de exportación (monoexportación), sin desarrollar una base industrial diversificada — patrón típico de las economías primario-exportadoras de la época." },
+  { id: "h2", eje: "Historia de Chile", dificultad: "dificil", correct: 1,
+    question: "El régimen parlamentario chileno (1891-1925) ha sido descrito por parte de la historiografía como un período de 'inestabilidad política a pesar del crecimiento económico'. ¿Qué explica mejor esta aparente contradicción?",
+    options: ["La ausencia total de recursos fiscales durante el período", "La rotación constante de gabinetes ministeriales pese a la bonanza salitrera", "El fortalecimiento excesivo del Poder Ejecutivo sobre el Congreso", "La inexistencia de partidos políticos organizados en esos años"],
+    explanation: "Pese a los altos ingresos fiscales del salitre, el predominio del Congreso generó una alta rotación de gabinetes, dificultando la gobernabilidad — la bonanza económica no se tradujo en estabilidad política." },
+  { id: "h3", eje: "Historia de Chile", dificultad: "dificil", correct: 3,
+    question: "Algunos historiadores sostienen que la Reforma Agraria chilena (1962-1973) no solo tuvo un objetivo redistributivo, sino también uno de modernización productiva del campo. ¿Qué evidencia respaldaría esta segunda dimensión del proceso?",
+    options: ["La eliminación completa de la producción agrícola de exportación", "El traspaso de tierras exclusivamente a manos del Estado sin intervención campesina", "La prohibición legal de cualquier forma de propiedad agrícola privada", "La creación de cooperativas y asentamientos orientados a mejorar la productividad rural"],
+    explanation: "Además de expropiar y redistribuir tierras, la reforma buscó modernizar la producción agrícola mediante asentamientos y cooperativas que introdujeran mejores técnicas y organización del trabajo rural." },
+
+  { id: "h4", eje: "Historia Universal", dificultad: "dificil", correct: 0,
+    question: "El historiador Eric Hobsbawm caracterizó al período 1914-1945 como parte de una 'guerra civil europea' de larga duración, más que como dos conflictos separados. ¿Qué elemento respalda mejor esta interpretación?",
+    options: ["La continuidad de tensiones territoriales e ideológicas no resueltas entre ambas guerras", "El hecho de que ambas guerras tuvieron exactamente los mismos países beligerantes", "La ausencia total de cambios en el mapa político europeo entre 1918 y 1939", "La firma de un tratado de paz definitivo que impidió cualquier nuevo conflicto"],
+    explanation: "Los conflictos territoriales, económicos e ideológicos derivados del Tratado de Versalles no se resolvieron tras 1918, lo que alimentó las tensiones que desembocaron en un nuevo conflicto en 1939, dando sustento a la idea de un ciclo bélico continuo." },
+  { id: "h5", eje: "Historia Universal", dificultad: "dificil", correct: 2,
+    question: "La Guerra Fría se ha descrito como un conflicto 'total pero indirecto' entre las superpotencias. ¿Qué característica del período respalda mejor esta definición?",
+    options: ["La ausencia completa de cualquier tipo de competencia entre bloques", "El enfrentamiento militar directo y sostenido entre Estados Unidos y la URSS", "La disputa se trasladó a conflictos regionales y a la competencia armamentista, sin choque directo entre las potencias", "La cooperación económica plena entre ambos bloques durante todo el período"],
+    explanation: "Aunque no hubo enfrentamiento militar directo entre EE.UU. y la URSS, la confrontación se manifestó de forma total a través de guerras indirectas (Corea, Vietnam), la carrera armamentista y la competencia ideológica global." },
+  { id: "h6", eje: "Historia Universal", dificultad: "dificil", correct: 1,
+    question: "Algunos análisis del proceso descolonizador de posguerra señalan que la independencia formal de muchas excolonias no implicó necesariamente su plena autonomía económica. ¿Qué concepto describe mejor esta situación?",
+    options: ["Autarquía económica plena de los nuevos Estados", "Neocolonialismo, entendido como dependencia económica pese a la independencia política", "Anexión territorial directa por parte de las antiguas metrópolis", "Integración económica igualitaria entre excolonias y metrópolis"],
+    explanation: "El concepto de neocolonialismo describe cómo muchas naciones recién independizadas mantuvieron fuertes lazos de dependencia económica y comercial con sus antiguas metrópolis, pese a contar con soberanía política formal." },
+
+  { id: "h7", eje: "Formación Ciudadana", dificultad: "dificil", correct: 3,
+    question: "En los sistemas democráticos contemporáneos, se distingue entre 'democracia formal' y 'democracia sustantiva'. ¿Qué elemento caracteriza principalmente a esta segunda noción?",
+    options: ["La sola existencia de elecciones periódicas y libres", "La vigencia exclusiva de un marco legal-constitucional", "La separación estricta entre los poderes del Estado, sin más consideraciones", "La existencia de condiciones reales de igualdad y ejercicio efectivo de derechos, más allá de lo formalmente establecido"],
+    explanation: "Mientras la democracia formal se centra en procedimientos (elecciones, marco legal), la democracia sustantiva pone el énfasis en si esos derechos y condiciones de igualdad se ejercen efectivamente en la práctica." },
+  { id: "h8", eje: "Formación Ciudadana", dificultad: "dificil", correct: 0,
+    question: "La probidad y la transparencia suelen presentarse como principios complementarios en la gestión pública, aunque no son idénticos. ¿Cuál es la diferencia principal entre ambos conceptos?",
+    options: ["La probidad se refiere a la conducta ética de los funcionarios, mientras la transparencia se refiere al acceso público a la información", "La transparencia regula exclusivamente el gasto militar del Estado", "La probidad solo aplica a las Fuerzas Armadas y no a otras instituciones", "Ambos conceptos son sinónimos exactos sin ninguna diferencia práctica"],
+    explanation: "La probidad alude a que los funcionarios antepongan el interés general al propio en su actuar, mientras que la transparencia se refiere al derecho ciudadano de acceder a la información sobre la gestión pública." },
+  { id: "h9", eje: "Formación Ciudadana", dificultad: "dificil", correct: 2,
+    question: "En el debate sobre el rol de las redes sociales en democracia, se ha argumentado que estas pueden simultáneamente ampliar y erosionar la participación ciudadana. ¿Qué situación ejemplifica mejor este carácter ambivalente?",
+    options: ["Las redes eliminan por completo cualquier forma de participación tradicional", "Las redes garantizan automáticamente información veraz a todos sus usuarios", "Las redes facilitan la organización ciudadana, pero también pueden intensificar la polarización mediante burbujas informativas", "Las redes han sido prohibidas en la mayoría de los países democráticos"],
+    explanation: "Las redes sociales amplían el acceso a la participación y organización ciudadana, pero al mismo tiempo pueden profundizar la polarización mediante fenómenos como el filtro burbuja, que homogeniza el entorno informativo de cada usuario." },
+
+  { id: "h10", eje: "Economía", dificultad: "dificil", correct: 1,
+    question: "Un banco central puede enfrentar un dilema entre controlar la inflación y sostener el crecimiento económico al fijar su tasa de interés. ¿Por qué se produce esta tensión?",
+    options: ["Porque subir y bajar la tasa de interés siempre generan el mismo efecto económico", "Porque una tasa más alta reduce la inflación pero también puede frenar el consumo y la inversión, afectando el crecimiento", "Porque la tasa de interés no tiene ninguna relación con el nivel de precios", "Porque el crecimiento económico depende exclusivamente del gasto fiscal, no de la política monetaria"],
+    explanation: "Subir la tasa de interés ayuda a contener la inflación al encarecer el crédito, pero ese mismo efecto desincentiva el consumo y la inversión, lo que puede ralentizar el crecimiento — de ahí el dilema de política monetaria." },
+  { id: "h11", eje: "Economía", dificultad: "dificil", correct: 3,
+    question: "En una economía con alta informalidad laboral, el aumento del empleo no necesariamente se traduce en mayor recaudación para el sistema de seguridad social. ¿Por qué ocurre esto?",
+    options: ["Porque el empleo informal siempre paga salarios más altos que el formal", "Porque el Estado prohíbe legalmente cotizar a los trabajadores informales", "Porque la informalidad no tiene ninguna relación con la seguridad social", "Porque los trabajadores informales generalmente no cotizan al sistema previsional ni de salud"],
+    explanation: "Al no estar sujetos a contrato formal, los trabajadores informales suelen quedar fuera del sistema de cotizaciones, lo que reduce la base de recaudación de la seguridad social pese a que exista empleo." },
+  { id: "h12", eje: "Economía", dificultad: "dificil", correct: 0,
+    question: "La economía circular propone reducir el uso de recursos naturales vírgenes mediante la reutilización y el reciclaje. ¿Qué diferencia fundamental existe entre este modelo y la economía lineal tradicional?",
+    options: ["La economía circular busca cerrar el ciclo de vida de los productos, mientras la lineal sigue un esquema de 'extraer-producir-desechar'", "La economía circular elimina por completo la producción industrial", "La economía lineal se basa exclusivamente en el reciclaje de materiales", "Ambos modelos son idénticos en su forma de gestionar los recursos"],
+    explanation: "El modelo lineal tradicional sigue la lógica de extraer materias primas, producir y desechar, mientras que la economía circular busca mantener los materiales en uso el mayor tiempo posible mediante reutilización y reciclaje." }
+];
+
+// ---- Lote adicional: preguntas largas, con cita para interpretar/ubicar en
+// contexto, estilo más cercano al DEMRE real. Contenido y citas originales,
+// redactadas por Claude — no reproducen ningún texto del examen oficial. ----
+const EXTRA_QUESTIONS = [
+  { id: "e1", eje: "Historia de Chile", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre la sociedad minera del norte de Chile a comienzos del siglo XX: «El trabajador de las salitreras vivía atado a la pulpería de la propia empresa: allí compraba con fichas, no con moneda corriente, todo lo que necesitaba para subsistir, desde el pan hasta el vestuario. Esa dependencia total del patrón por sobre el obrero fue, más que el salario mismo, la raíz de buena parte del descontento social que se extendió por el desierto en aquellos años». (Fuente ficticia con fines de práctica). Considerando el contexto de la Cuestión Social en Chile, ¿qué elemento del sistema salitrero se identifica en el texto como principal fuente de conflicto?",
+    options: ["La escasa demanda internacional del salitre chileno en esa época", "El sistema de pago en fichas y la dependencia comercial del trabajador respecto de la empresa", "La ausencia de mano de obra disponible para las faenas mineras", "El exceso de regulación estatal sobre la actividad salitrera"],
+    correct: 1,
+    explanation: "El texto apunta al sistema de pulperías y fichas como mecanismo que ataba al obrero a la empresa más allá del salario, generando una dependencia que alimentó el descontento característico de la Cuestión Social." },
+  { id: "e2", eje: "Historia de Chile", dificultad: "dificil",
+    question: "Considera la siguiente comparación entre dos procesos de la historia política chilena: el gobierno de Balmaceda (1886-1891) enfrentó al Ejecutivo con el Congreso por el control del gasto público, mientras que la crisis de 1973 enfrentó al Ejecutivo con el Congreso por el rumbo del proceso de transformaciones económicas y sociales del país. A partir de esta comparación, ¿qué elemento estructural comparten ambos episodios de crisis institucional?",
+    options: ["En ambos casos, el conflicto se originó por una intervención militar extranjera", "En ambos casos, subyace una tensión entre los poderes Ejecutivo y Legislativo por el control de decisiones clave del Estado", "En ambos casos, la crisis fue resuelta mediante un plebiscito convocado por el Congreso", "En ambos casos, el conflicto surgió exclusivamente por diferencias en política exterior"],
+    correct: 1,
+    explanation: "Aunque separados por casi un siglo y con causas distintas en su contenido, ambos episodios comparten una tensión de fondo entre Ejecutivo y Congreso por el control de decisiones centrales del Estado — un patrón recurrente en momentos de crisis institucional en Chile." },
+  { id: "e3", eje: "Historia de Chile", dificultad: "facil",
+    question: "Lee el siguiente testimonio atribuido a una dirigenta vecinal de Santiago, recordando la década de 1980: «Cuando el dólar se disparó y el desempleo llegó a niveles que no habíamos visto, en la población empezamos a organizar ollas comunes. No era política, al principio, era pura necesidad: juntar lo poco que había para que las familias comieran». (Testimonio ficticio con fines de práctica). ¿Qué fenómeno social e histórico ilustra mejor este testimonio?",
+    options: ["Las políticas de expansión del gasto social implementadas por el régimen militar", "Las estrategias de subsistencia popular surgidas en el contexto de la crisis económica de comienzos de los años 80", "El proceso de reforma agraria impulsado en la década de 1960", "El auge exportador asociado al ciclo del salitre"],
+    correct: 1,
+    explanation: "La crisis económica de 1982-1983 (con alto desempleo y devaluación) generó estrategias populares de subsistencia como las ollas comunes, que además terminaron convirtiéndose en espacios de organización social y, más tarde, de oposición política." },
+
+  { id: "e4", eje: "Historia Universal", dificultad: "dificil",
+    question: "Lee el siguiente fragmento, atribuido a un economista europeo de posguerra: «Reconstruir Europa solo con capital europeo era, en 1947, una fantasía: las fábricas estaban en ruinas y las reservas de oro, agotadas por seis años de guerra. Sin una inyección externa de recursos, el continente corría el riesgo de caer en la desesperación económica que ya una vez, en los años treinta, había alimentado a los totalitarismos». (Cita ficticia con fines de práctica). Según el fragmento, ¿qué relación se establece entre la crisis económica de posguerra y el auge de los totalitarismos de entreguerras?",
+    options: ["Se sugiere que ambos fenómenos no guardan relación alguna entre sí", "Se sugiere que la crisis económica es un terreno fértil para el surgimiento de proyectos políticos totalitarios", "Se sugiere que los totalitarismos fueron la causa directa de la Segunda Guerra Mundial únicamente", "Se sugiere que la reconstrucción europea dependió exclusivamente de recursos propios"],
+    correct: 1,
+    explanation: "El fragmento vincula explícitamente la crisis económica con el riesgo de repetir el escenario de los años 30, cuando la crisis alimentó el ascenso de los totalitarismos — de ahí la urgencia de una ayuda externa como el Plan Marshall." },
+  { id: "e5", eje: "Historia Universal", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre el proceso de descolonización africana: «La bandera nueva se izó, pero las líneas en el mapa seguían siendo las mismas que había trazado el colonizador décadas atrás, sin considerar fronteras étnicas o lingüísticas previas. Esa herencia territorial se convirtió, en más de un caso, en la semilla de futuros conflictos internos». (Fuente ficticia con fines de práctica). ¿Qué idea central sobre el proceso descolonizador se desprende del texto?",
+    options: ["Que la independencia política resolvió automáticamente todas las tensiones internas heredadas del colonialismo", "Que las fronteras trazadas durante el colonialismo continuaron vigentes tras la independencia, generando tensiones posteriores", "Que los nuevos Estados africanos redibujaron completamente sus fronteras al independizarse", "Que el proceso de descolonización no tuvo ninguna relación con la organización territorial previa"],
+    correct: 1,
+    explanation: "El texto plantea que la independencia política no implicó un rediseño de las fronteras heredadas del colonialismo, y que esa continuidad territorial —ajena a realidades étnicas o culturales locales— fue fuente de conflictos posteriores." },
+  { id: "e6", eje: "Historia Universal", dificultad: "facil",
+    question: "Lee el siguiente fragmento sobre la competencia espacial entre Estados Unidos y la URSS: «Cuando el Sputnik cruzó el cielo en 1957, no fue solo un satélite lo que orbitó la Tierra: fue la certeza, para buena parte de Occidente, de que el bloque soviético podía superar tecnológicamente al propio Estados Unidos». (Fuente ficticia con fines de práctica). ¿Qué dimensión de la Guerra Fría ilustra mejor el episodio descrito?",
+    options: ["La confrontación militar directa entre ambas potencias en territorio europeo", "La competencia científico-tecnológica como terreno de disputa simbólica entre los bloques", "La independencia de las colonias africanas respecto de sus metrópolis europeas", "La reunificación de Alemania tras la caída del bloque soviético"],
+    correct: 1,
+    explanation: "La carrera espacial fue una de las principales expresiones de la Guerra Fría en el terreno científico-tecnológico, funcionando como demostración de poder y capacidad entre los bloques sin enfrentamiento militar directo." },
+
+  { id: "e7", eje: "Formación Ciudadana", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre el funcionamiento de una democracia: «De poco sirve que la Constitución garantice el derecho a un abogado si, en la práctica, solo quienes pueden pagar uno logran una defensa adecuada. La igualdad ante la ley, cuando no va acompañada de condiciones reales para ejercerla, corre el riesgo de quedar en el papel». (Fuente ficticia con fines de práctica). ¿Qué distinción conceptual ilustra mejor este fragmento?",
+    options: ["La diferencia entre poder Legislativo y poder Judicial", "La diferencia entre democracia formal (marco legal) y democracia sustantiva (ejercicio real de derechos)", "La diferencia entre Estado unitario y Estado federal", "La diferencia entre plebiscito y elección parlamentaria"],
+    correct: 1,
+    explanation: "El fragmento contrasta la existencia formal de un derecho (el texto constitucional) con las condiciones reales para ejercerlo, ilustrando la distinción entre democracia formal y democracia sustantiva." },
+  { id: "e8", eje: "Formación Ciudadana", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre la relación entre medios digitales y opinión pública: «Antes, para informarse sobre política había que buscar activamente el periódico o encender el noticiario. Hoy, la información llega sola, seleccionada por un algoritmo que no tiene otro objetivo que mantenernos mirando la pantalla el mayor tiempo posible, no necesariamente informarnos mejor». (Fuente ficticia con fines de práctica). ¿Qué riesgo para la democracia se desprende principalmente de este fragmento?",
+    options: ["Que la ciudadanía reciba información seleccionada según criterios de interacción, no de relevancia informativa", "Que los medios de comunicación tradicionales desaparezcan por completo en el corto plazo", "Que el Estado pierda toda capacidad de regular el uso de internet", "Que la ciudadanía deje de tener acceso a internet en el futuro"],
+    correct: 0,
+    explanation: "El fragmento advierte que los algoritmos priorizan mantener la atención del usuario por sobre la calidad o pluralidad informativa, lo que puede empobrecer el debate público al filtrar la información según lógicas comerciales, no democráticas." },
+  { id: "e9", eje: "Formación Ciudadana", dificultad: "facil",
+    question: "Lee el siguiente fragmento sobre la relación entre ciudadanía y Estado: «Pagar impuestos, cumplir las leyes, participar en las elecciones: todo eso es exigible al ciudadano. Pero la ciudadanía también implica poder exigir de vuelta — que el Estado rinda cuentas, que las decisiones se tomen con transparencia, que existan mecanismos reales para reclamar cuando algo falla». (Fuente ficticia con fines de práctica). ¿Qué concepto de ciudadanía se desprende principalmente del fragmento?",
+    options: ["Una ciudadanía entendida únicamente como el cumplimiento de deberes hacia el Estado", "Una ciudadanía entendida como una relación recíproca de deberes y derechos entre las personas y el Estado", "Una ciudadanía que excluye cualquier posibilidad de fiscalizar al Estado", "Una ciudadanía limitada exclusivamente al acto de votar en elecciones"],
+    correct: 1,
+    explanation: "El fragmento describe la ciudadanía como una relación de doble vía: el cumplimiento de deberes por parte de las personas, junto con la posibilidad de exigir rendición de cuentas y transparencia por parte del Estado." },
+
+  { id: "e10", eje: "Economía", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre el mercado laboral: «Cuando una economía crece rápido pero ese crecimiento se concentra en unos pocos sectores altamente tecnificados, el número de empleos generados puede ser menor al esperado — el llamado 'crecimiento sin empleo'. La expansión del PIB, en esos casos, no se traduce automáticamente en más puestos de trabajo». (Fuente ficticia con fines de práctica). ¿Qué relación económica cuestiona principalmente este fragmento?",
+    options: ["La relación directa y automática entre crecimiento del PIB y generación de empleo", "La relación entre inflación y tasa de interés fijada por el Banco Central", "La relación entre impuestos directos e indirectos en la recaudación fiscal", "La relación entre balanza comercial y tipo de cambio"],
+    correct: 0,
+    explanation: "El fragmento cuestiona la idea de que un mayor crecimiento económico se traduce siempre en más empleo, señalando que la composición sectorial del crecimiento (por ejemplo, hacia sectores intensivos en tecnología) puede desacoplar ambas variables." },
+  { id: "e11", eje: "Economía", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre política fiscal: «En años de bonanza del cobre, cuando el precio sube y la recaudación fiscal se dispara, la tentación de gastar más es enorme. La regla de balance estructural busca precisamente resistir esa tentación: gastar según el ingreso de largo plazo esperado, no según el ingreso circunstancial de un buen año». (Fuente ficticia con fines de práctica). ¿Qué objetivo de política económica se describe en el fragmento?",
+    options: ["Aumentar el gasto público exclusivamente durante los períodos de alto precio del cobre", "Suavizar el gasto fiscal en el tiempo, evitando que dependa de ingresos coyunturales como el precio del cobre", "Eliminar por completo la dependencia fiscal de los ingresos mineros", "Fijar el tipo de cambio en función del precio internacional del cobre"],
+    correct: 1,
+    explanation: "La regla de balance estructural busca desacoplar el gasto público del ciclo de precios de materias primas como el cobre, gastando según una estimación de ingresos de tendencia y no según el ingreso puntual de un año específico." },
+  { id: "e12", eje: "Economía", dificultad: "facil",
+    question: "Lee el siguiente fragmento sobre comercio internacional: «Un país no necesita ser el más eficiente del mundo produciendo un bien para beneficiarse de exportarlo; le basta con ser relativamente más eficiente en eso que en otras cosas, en comparación con sus socios comerciales». (Fuente ficticia con fines de práctica). ¿Qué principio económico describe este fragmento?",
+    options: ["El principio de la ventaja comparativa en el comercio internacional", "El principio de la balanza de pagos equilibrada", "El principio de la sustitución de importaciones", "El principio de la paridad del poder adquisitivo"],
+    correct: 0,
+    explanation: "El fragmento describe la ventaja comparativa: un país se beneficia especializándose en aquello que produce con menor costo relativo (no necesariamente absoluto) frente a otros países, y comerciando en base a esa especialización." },
+
+  { id: "e13", eje: "Historia de Chile", dificultad: "dificil",
+    question: "Compara los siguientes dos procesos: la centralización política impulsada por la Constitución de 1833 y la centralización económica impulsada durante el período de auge salitrero (1880-1930). En ambos casos, ¿qué elemento institucional se ve reforzado?",
+    options: ["El rol del Poder Ejecutivo y del Estado central en la conducción del país", "La autonomía de los gobiernos provinciales frente al poder central", "El poder de la Iglesia Católica sobre las decisiones del Estado", "La influencia de los sindicatos obreros en la política nacional"],
+    correct: 0,
+    explanation: "Tanto el presidencialismo autoritario de 1833 como la administración de los ingresos salitreros reforzaron el rol del Estado central y del Ejecutivo por sobre otras instancias de poder, en dos momentos distintos pero con una lógica centralizadora similar." },
+  { id: "e14", eje: "Historia Universal", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre el fin de la Guerra Fría: «No fue una bomba la que puso fin al enfrentamiento, sino el peso acumulado de una economía que ya no podía sostener el gasto militar, las reformas que se le escaparon de las manos a quien las impulsó, y una población cada vez menos dispuesta a creer en las promesas del sistema». (Fuente ficticia con fines de práctica). Según el fragmento, ¿qué tipo de factores explica principalmente el fin de la Guerra Fría?",
+    options: ["Exclusivamente factores militares y bélicos directos", "Una combinación de factores económicos, políticos y sociales internos del bloque soviético", "Exclusivamente la presión diplomática ejercida por organismos internacionales", "Exclusivamente el fortalecimiento del bloque comunista chino"],
+    correct: 1,
+    explanation: "El fragmento atribuye el fin de la Guerra Fría a una combinación de crisis económica, reformas políticas mal controladas y desgaste social interno de la URSS, más que a un enfrentamiento militar directo o a factores externos." },
+  { id: "e15", eje: "Formación Ciudadana", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre participación electoral: «Cuando el voto deja de ser obligatorio, quienes deciden no votar suelen concentrarse en los mismos grupos socioeconómicos, mientras que quienes sí concurren a votar tienden a tener más años de escolaridad e ingresos. El resultado electoral, entonces, puede terminar representando más a unos sectores que a otros». (Fuente ficticia con fines de práctica). ¿Qué riesgo para la representatividad democrática plantea el fragmento?",
+    options: ["Que el voto voluntario garantice automáticamente una participación más representativa de toda la sociedad", "Que la abstención electoral se distribuya de forma desigual entre distintos grupos socioeconómicos, sesgando la representatividad del resultado", "Que el voto obligatorio elimine por completo cualquier sesgo en la participación electoral", "Que la escolaridad de los votantes no tenga ninguna relación con su participación electoral"],
+    correct: 1,
+    explanation: "El fragmento plantea que, bajo voto voluntario, la abstención no es aleatoria sino que se concentra en ciertos grupos socioeconómicos, lo que puede sesgar la representatividad del resultado electoral hacia los sectores que sí participan." },
+  { id: "e16", eje: "Economía", dificultad: "dificil",
+    question: "Lee el siguiente fragmento sobre desigualdad económica: «Dos países pueden tener el mismo PIB per cápita y, sin embargo, vivir realidades sociales completamente distintas: en uno, el ingreso se reparte de forma relativamente pareja; en el otro, un pequeño grupo concentra la mayor parte de la riqueza mientras el resto subsiste con muy poco». (Fuente ficticia con fines de práctica). ¿Qué limitación del PIB per cápita como indicador se ilustra en el fragmento?",
+    options: ["Que el PIB per cápita no permite realizar comparaciones entre distintos países", "Que el PIB per cápita es un promedio que no refleja cómo se distribuye realmente el ingreso dentro de un país", "Que el PIB per cápita solo puede calcularse en economías desarrolladas", "Que el PIB per cápita mide exclusivamente el gasto público de un país"],
+    correct: 1,
+    explanation: "El fragmento ilustra que el PIB per cápita, al ser un promedio, puede ocultar niveles muy distintos de desigualdad en la distribución del ingreso — dos países con el mismo promedio pueden tener realidades sociales muy diferentes." },
+  { id: "e17", eje: "Historia Universal", dificultad: "dificil",
+    question: "Entre los autoritarismos es posible advertir ciertas características particulares. Considera los siguientes enunciados: I. El nazismo desarrolló una clara postura racista que lo llevó a la 'solución final', es decir, el intento de eliminar a quienes consideraba inferiores o una carga para el Estado. II. El fascismo italiano era abiertamente internacionalista, lo que lo emparentaba con el estalinismo. III. El estalinismo soviético parte de la premisa de una alta intervención del Estado en la economía, a diferencia del fascismo, que dejaba toda la actividad económica en manos del mercado. ¿Cuál(es) de los enunciados anteriores es (son) correcto(s)?",
+    options: ["Solo I", "Solo II", "I y II", "II y III"],
+    correct: 0,
+    explanation: "Solo el enunciado I es correcto: el fascismo italiano era nacionalista, no internacionalista, y también tuvo fuerte intervención estatal en la economía (corporativismo), por lo que II y III son falsos." },
+  { id: "e18", eje: "Historia Universal", dificultad: "dificil",
+    question: "La crisis económica de 1929 es una de las experiencias más lamentables de la historia del mundo occidental. Con respecto a ella, ¿cuál de las siguientes afirmaciones es falsa?",
+    options: ["Se produjo por las consecuencias económicas de la Primera Guerra Mundial, que favorecieron el desarrollo de la economía especulativa y del crédito.", "Técnicamente hablando, representa un proceso inflacionario.", "El hecho de que Estados Unidos fuera el centro del capitalismo mundial, y su interés por repatriar los créditos, provocó que la crisis se extendiera por casi todo el mundo.", "La economía de la URSS no fue afectada por la crisis económica."],
+    correct: 1,
+    explanation: "La afirmación falsa es la B: la crisis de 1929 fue un proceso deflacionario (caída de precios, quiebra de bancos, contracción del crédito), no inflacionario. Las otras tres son correctas: A y C describen bien sus causas y propagación, y D es cierto porque la URSS, con economía planificada y aislada del mercado capitalista, no sufrió su impacto directo." }
+];
+
+const QUESTIONS = PRACTICE_QUESTIONS.concat(HARD_QUESTIONS).concat(EXTRA_QUESTIONS).concat(
+  OFFICIAL_QUESTIONS.filter(q => !q.question.includes("PEGA AQUÍ"))
+);
+</script>
+<!-- ============================================================
+     FIN DEL BANCO DE PREGUNTAS
+     ============================================================ -->
+
+<div class="app">
+
+  <!-- ============ MODAL: INICIAR SESIÓN / CREAR CUENTA ============ -->
+  <div id="auth-modal" class="auth-modal">
+    <div class="auth-card">
+      <button class="auth-close" id="auth-close" aria-label="Cerrar">&times;</button>
+      <div class="setup-label" id="auth-title">Iniciar sesión</div>
+      <div class="auth-error" id="auth-error" style="display:none;"></div>
+      <input type="email" id="auth-email" class="auth-input" placeholder="Correo electrónico" autocomplete="email">
+      <input type="password" id="auth-password" class="auth-input" placeholder="Contraseña" autocomplete="current-password">
+      <button class="start-btn" id="auth-submit">Iniciar sesión</button>
+      <div class="auth-or">o</div>
+      <button class="auth-google-btn" id="auth-google">Continuar con Google</button>
+      <div class="auth-switch" id="auth-switch"></div>
+    </div>
+  </div>
+
+  <!-- ============ PANTALLA 1: INICIO / CONFIGURACIÓN ============ -->
+  <div id="setup-screen">
+    <div class="top" style="justify-content:center; text-align:center;">
+      <div>
+        <div class="title" style="color:#1c8fcb">Práctica Historia</div>
+        <div class="subtitle" style="color:#23261f">Preparación PAES — arma tu sesión</div>
+      </div>
+    </div>
+
+    <div id="account-bar" class="account-bar"></div>
+
+    <div id="progress-panel" class="progress-panel" style="display:none;">
+      <div class="progress-row">
+        <div class="streak-badge" id="streak-badge"></div>
+      </div>
+    </div>
+
+    <div id="diagnostic-banner" class="diagnostic-banner" style="display:none;">
+      <div class="diag-text">
+        <strong>¿Primera vez?</strong> Haz un diagnóstico rápido de 10 preguntas mixtas para saber con qué dificultad partir.
+      </div>
+      <button class="diag-btn" id="diag-btn">Hacer diagnóstico</button>
+    </div>
+
+    <div class="setup-card">
+      <div class="setup-section">
+        <div class="setup-label">Ejes a practicar</div>
+        <div class="chip-row" id="eje-chips"></div>
+      </div>
+
+      <div class="setup-section">
+        <div class="setup-label">Dificultad</div>
+        <div class="chip-row" id="dificultad-chips">
+          <button class="chip" data-val="mezcla">Mezcla</button>
+          <button class="chip" data-val="facil">Fácil</button>
+          <button class="chip" data-val="dificil">Difícil</button>
+        </div>
+      </div>
+
+      <div class="setup-section">
+        <div class="setup-label">Modo</div>
+        <div class="mode-list" id="mode-list">
+          <div class="mode-item">
+            <button class="mode-option" data-mode="spaced">
+              <span class="mode-name">Modo Clásico</span>
+              <span class="mode-desc">Repetición por error</span>
+              <span class="mode-more" data-info="Sesión sin fin — lo que fallas vuelve a aparecer más seguido.">i</span>
+            </button>
+          </div>
+
+          <div class="mode-item">
+            <button class="mode-option" data-mode="fixed">
+              <span class="mode-name">Set</span>
+              <span class="mode-desc">Cantidad fija de preguntas</span>
+              <span class="mode-more" data-info="Elige cuántas preguntas responder y revisa tu resultado al final.">i</span>
+            </button>
+            <div class="mode-config" id="config-fixed" style="display:none;">
+              <div class="setup-label">Cantidad de preguntas</div>
+              <div class="chip-row" id="count-chips">
+                <button class="chip" data-val="10">10</button>
+                <button class="chip" data-val="20">20</button>
+                <button class="chip" data-val="30">30</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mode-item">
+            <button class="mode-option" data-mode="timed">
+              <span class="mode-name">Contrarreloj</span>
+              <span class="mode-desc">Contra el tiempo</span>
+              <span class="mode-more" data-info="Responde tantas como puedas antes de que se acabe el tiempo.">i</span>
+            </button>
+            <div class="mode-config" id="config-timed" style="display:none;">
+              <div class="setup-label">Minutos</div>
+              <div class="chip-row" id="time-chips">
+                <button class="chip" data-val="5">5</button>
+                <button class="chip" data-val="10">10</button>
+                <button class="chip" data-val="20">20</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mode-item">
+            <button class="mode-option" data-mode="random">
+              <span class="mode-name">Barajado</span>
+              <span class="mode-desc">Ensayo aleatorio</span>
+              <span class="mode-more" data-info="Recorre una sola vez, sin repetición, todas las preguntas del filtro.">i</span>
+            </button>
+          </div>
+
+          <div class="mode-item">
+            <button class="mode-option" data-mode="exam">
+              <span class="mode-name">Simulacro</span>
+              <span class="mode-desc">Examen real completo</span>
+              <span class="mode-more" data-info="65 preguntas (o el total disponible), 120 minutos, mezclando todos los ejes — como el examen real. Ignora los filtros de eje/dificultad de arriba y te muestra tu puntaje PAES proyectado.">i</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pool-count" id="pool-count"></div>
+
+      <button class="start-btn" id="start-btn">Comenzar</button>
+    </div>
+
+    <div class="foot">
+      <span id="global-dominadas"></span>
+      <span class="foot-actions">
+        <button class="reset-btn" id="export-btn">Exportar</button>
+        <button class="reset-btn" id="import-btn">Importar</button>
+        <button class="reset-btn" id="reset-btn">Reiniciar progreso</button>
+      </span>
+      <input type="file" id="import-file" accept="application/json" style="display:none;">
+    </div>
+  </div>
+
+  <!-- ============ PANTALLA 2: PRÁCTICA ============ -->
+  <div id="practice-screen" style="display:none;">
+    <div class="top">
+      <button class="back-btn" id="exit-btn">← Salir</button>
+      <div class="stats" id="practice-topstats"></div>
+    </div>
+
+    <div class="mastery-row" id="mastery-row"></div>
+
+    <div class="card">
+      <div class="eje" id="q-eje"></div>
+      <div class="question" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="confirm-btn" id="confirm-btn" disabled>Confirmar respuesta</button>
+
+      <div class="feedback" id="feedback">
+        <div class="verdict" id="verdict"></div>
+        <div class="explanation" id="explanation"></div>
+        <button class="next-btn" id="next-btn">Siguiente pregunta</button>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span id="session-count">0 respondidas esta sesión</span>
+    </div>
+  </div>
+
+  <!-- ============ PANTALLA 3: RESULTADOS ============ -->
+  <div id="results-screen" style="display:none;">
+    <div class="top">
+      <div class="title">Resultados</div>
+    </div>
+    <div class="results-card">
+      <div class="results-score" id="results-score"></div>
+      <div class="results-sub" id="results-sub"></div>
+      <div class="results-breakdown" id="results-breakdown"></div>
+      <div id="paes-score-box" style="display:none;"></div>
+      <div id="diag-recommend" style="display:none;"></div>
+    </div>
+    <div id="missed-list" class="missed-list"></div>
+    <button class="start-btn" id="results-again-btn">Volver al inicio</button>
+  </div>
+
+</div>
+
+<script type="module">
+// ---------------------------------------------------------------
+// FIREBASE — cuentas de usuario y progreso en la nube
+// ---------------------------------------------------------------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
+  signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9N0o70vzdI3X6Mf1JuMAPRc37MXFfDcs",
+  authDomain: "practica-historia.firebaseapp.com",
+  projectId: "practica-historia",
+  storageBucket: "practica-historia.firebasestorage.app",
+  messagingSenderId: "866460417971",
+  appId: "1:866460417971:web:3c9295c3ce6939c6c955c6"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+let currentUser = null;
+let authMode = 'login'; // 'login' | 'register'
+
+function userDocRef(uid) { return doc(db, 'users', uid); }
+function historyColRef(uid) { return collection(db, 'users', uid, 'history'); }
+
+const STORAGE_KEY = "paes_historia_progress_v3";
+const LETTERS = ["A", "B", "C", "D"];
+
+const CATEGORY_COLORS = {
+  "Historia de Chile": "#1c8fcb",
+  "Historia Universal": "#1c8fcb",
+  "Formación Ciudadana": "#1c8fcb",
+  "Economía": "#1c8fcb"
+};
+const EJES = Object.keys(CATEGORY_COLORS);
+function categoryColor(eje) { return CATEGORY_COLORS[eje] || "#4a7fd6"; }
+
+// ---- Progreso persistente (caja Leitner + último resultado) ----
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {};
+}
+let progress = loadProgress();
+function saveProgress() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  if (currentUser) {
+    setDoc(userDocRef(currentUser.uid), { progress, updatedAt: serverTimestamp() }, { merge: true })
+      .catch(err => console.warn('No se pudo sincronizar el progreso con la nube:', err));
+  }
+}
+function getEntry(id) {
+  if (!progress[id]) progress[id] = { box: 1, result: null };
+  return progress[id];
+}
+
+// ---- Historial de sesiones (para racha + progreso en el tiempo) ----
+const HISTORY_KEY = "paes_historia_history_v1";
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return [];
+}
+function pushHistory(entry) {
+  const h = loadHistory();
+  h.push(entry);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+  if (currentUser) {
+    addDoc(historyColRef(currentUser.uid), entry)
+      .catch(err => console.warn('No se pudo sincronizar el historial con la nube:', err));
+  }
+}
+function dayKey(d) { return d.toISOString().slice(0, 10); }
+function computeStreak(history) {
+  if (history.length === 0) return 0;
+  const days = new Set(history.map(h => h.date));
+  let streak = 0;
+  let cursor = new Date();
+  // si hoy no hay sesión todavía, la racha se cuenta desde ayer hacia atrás
+  if (!days.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+  while (days.has(dayKey(cursor))) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+// ---- Tabla oficial de conversión Puntaje P -> Puntaje PAES (Historia y Cs. Sociales, DEMRE) ----
+const TABLA_PUNTAJE_PAES = [100,117,145,169,191,212,233,253,270,286,300,314,331,348,364,377,387,397,406,418,432,447,463,476,486,493,500,508,517,530,545,561,574,585,593,600,607,616,628,643,659,673,686,695,705,714,727,742,759,775,790,804,818,835,853,874,894,915,938,964,1000];
+function puntajePAESProyectado(correctas, totalConsiderado) {
+  // Escala proporcional a 60 preguntas (base oficial de la tabla)
+  const p = Math.round((correctas / totalConsiderado) * 60);
+  const idx = Math.max(0, Math.min(60, p));
+  return TABLA_PUNTAJE_PAES[idx];
+}
+
+// ---- Diagnóstico inicial ----
+const DIAG_KEY = "paes_historia_diag_done_v1";
+
+// ==========================================================
+// PANTALLA 1: SETUP
+// ==========================================================
+let setupEjes = new Set(EJES);
+let setupDificultad = "mezcla";
+let setupMode = "spaced";
+let setupCount = 10;
+let setupMinutes = 10;
+
+function renderEjeChips() {
+  document.getElementById('eje-chips').innerHTML = EJES.map(eje => `
+    <button class="chip eje-chip ${setupEjes.has(eje) ? 'active' : ''}"
+      data-eje="${eje}"
+      style="${setupEjes.has(eje) ? `background:${categoryColor(eje)};border-color:${categoryColor(eje)}` : ''}">
+      ${eje}
+    </button>
+  `).join('');
+  document.querySelectorAll('.eje-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const eje = btn.dataset.eje;
+      if (setupEjes.has(eje)) { if (setupEjes.size > 1) setupEjes.delete(eje); }
+      else setupEjes.add(eje);
+      renderEjeChips();
+      updatePoolCount();
+    });
+  });
+}
+
+function currentPool() {
+  return QUESTIONS.filter(q =>
+    setupEjes.has(q.eje) &&
+    (setupDificultad === "mezcla" || q.dificultad === setupDificultad)
+  );
+}
+
+function updatePoolCount() {
+  const n = currentPool().length;
+  document.getElementById('pool-count').textContent = `${n} pregunta${n === 1 ? '' : 's'} disponibles con este filtro`;
+  document.getElementById('start-btn').disabled = n === 0;
+}
+
+function setupChipGroup(containerId, onPick, initialVal) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.chip').forEach(btn => {
+    if (btn.dataset.val === String(initialVal)) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onPick(btn.dataset.val);
+      updatePoolCount();
+    });
+  });
+}
+
+setupChipGroup('dificultad-chips', v => setupDificultad = v, setupDificultad);
+setupChipGroup('count-chips', v => setupCount = parseInt(v), setupCount);
+setupChipGroup('time-chips', v => setupMinutes = parseInt(v), setupMinutes);
+
+document.querySelectorAll('.mode-more').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    let extra = el.nextElementSibling;
+    if (!extra || !extra.classList.contains('mode-more-text')) {
+      extra = document.createElement('span');
+      extra.className = 'mode-more-text';
+      extra.textContent = el.dataset.info;
+      el.insertAdjacentElement('afterend', extra);
+    }
+    extra.classList.toggle('show');
+  });
+});
+
+document.querySelectorAll('.mode-option').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-option').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    setupMode = btn.dataset.mode;
+    document.getElementById('config-fixed').style.display = (setupMode === 'fixed') ? 'block' : 'none';
+    document.getElementById('config-timed').style.display = (setupMode === 'timed') ? 'block' : 'none';
+  });
+});
+document.querySelector('.mode-option[data-mode="spaced"]').classList.add('active');
+
+function renderGlobalStats() {
+  const dominadas = QUESTIONS.filter(q => getEntry(q.id).box >= 4).length;
+  document.getElementById('global-dominadas').textContent = `${dominadas}/${QUESTIONS.length} preguntas dominadas en total`;
+}
+
+// ---- Panel de progreso: racha ----
+function renderProgressPanel() {
+  const history = loadHistory();
+  const panel = document.getElementById('progress-panel');
+  if (history.length === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+
+  const streak = computeStreak(history);
+  document.getElementById('streak-badge').innerHTML = streak > 0 ? `<span class="flame">🔥</span> ${streak} día${streak === 1 ? '' : 's'} seguidos` : '';
+}
+
+// ---- Banner de diagnóstico inicial (solo si nunca se ha completado una sesión) ----
+function renderDiagnosticBanner() {
+  const done = localStorage.getItem(DIAG_KEY);
+  const history = loadHistory();
+  document.getElementById('diagnostic-banner').style.display = (!done && history.length === 0) ? 'flex' : 'none';
+}
+
+function startDiagnostic() {
+  setupEjes = new Set(EJES);
+  setupDificultad = 'mezcla';
+  setupMode = 'fixed';
+  setupCount = 10;
+  startSession(true);
+}
+document.getElementById('diag-btn').addEventListener('click', startDiagnostic);
+
+renderEjeChips();
+updatePoolCount();
+renderGlobalStats();
+renderProgressPanel();
+renderDiagnosticBanner();
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (confirm('¿Reiniciar todo tu progreso guardado?')) {
+    progress = {};
+    saveProgress();
+    renderGlobalStats();
+  }
+});
+
+// ---- Exportar / Importar progreso (respaldo o cambio de dispositivo) ----
+document.getElementById('export-btn').addEventListener('click', () => {
+  const data = {
+    tipo: 'paes-historia-backup',
+    version: 1,
+    fecha: new Date().toISOString(),
+    progress: loadProgress(),
+    history: loadHistory(),
+    diagDone: localStorage.getItem(DIAG_KEY) || null
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `paes-historia-progreso-${data.fecha.slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-btn').addEventListener('click', () => {
+  document.getElementById('import-file').click();
+});
+
+document.getElementById('import-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.tipo !== 'paes-historia-backup') {
+        alert('Este archivo no parece ser un respaldo válido de esta app.');
+        return;
+      }
+      if (!confirm('Esto reemplazará tu progreso actual en este dispositivo por el del archivo importado. ¿Continuar?')) return;
+      progress = data.progress || {};
+      saveProgress();
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(data.history || []));
+      if (data.diagDone) localStorage.setItem(DIAG_KEY, data.diagDone);
+      if (currentUser) {
+        setDoc(userDocRef(currentUser.uid), { diagDone: !!data.diagDone, updatedAt: serverTimestamp() }, { merge: true }).catch(() => {});
+        (data.history || []).forEach(entry => {
+          addDoc(historyColRef(currentUser.uid), entry).catch(() => {});
+        });
+      }
+      renderGlobalStats();
+      renderProgressPanel();
+      renderDiagnosticBanner();
+      updatePoolCount();
+      alert('Progreso importado correctamente.');
+    } catch (err) {
+      alert('No se pudo leer el archivo. ¿Es un respaldo exportado desde esta misma app?');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ==========================================================
+// SESIÓN DE PRÁCTICA (modos: spaced / fixed / timed / random)
+// ==========================================================
+let session = null; // { mode, pool, queue, index, answered, correct, timerEnd, timerInterval, results: [] }
+
+function startSession(isDiagnostic) {
+  const pool = (setupMode === 'exam') ? QUESTIONS.slice() : currentPool();
+  if (pool.length === 0) return;
+
+  session = {
+    mode: setupMode,
+    pool,
+    queue: [],
+    index: 0,
+    lastId: null,
+    answered: 0,
+    correct: 0,
+    missed: [],
+    timerInterval: null,
+    timerEnd: null,
+    current: null,
+    selectedIndex: null,
+    locked: false,
+    isDiagnostic: !!isDiagnostic
+  };
+
+  if (session.mode === 'fixed' || session.mode === 'timed') {
+    session.queue = shuffle(pool).slice(0, session.mode === 'fixed' ? setupCount : pool.length);
+  } else if (session.mode === 'random') {
+    session.queue = shuffle(pool);
+  } else if (session.mode === 'exam') {
+    session.queue = shuffle(pool).slice(0, Math.min(65, pool.length));
+  }
+  // 'spaced' mode no usa queue fija: pregunta a pregunta con selección ponderada
+
+  if (session.mode === 'timed') {
+    session.timerEnd = Date.now() + setupMinutes * 60 * 1000;
+    session.timerInterval = setInterval(updateTimer, 250);
+  } else if (session.mode === 'exam') {
+    session.timerEnd = Date.now() + 120 * 60 * 1000;
+    session.timerInterval = setInterval(updateTimer, 250);
+  }
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('practice-screen').style.display = 'block';
+
+  renderTopStats();
+  nextQuestion();
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function updateTimer() {
+  const msLeft = session.timerEnd - Date.now();
+  if (msLeft <= 0) {
+    clearInterval(session.timerInterval);
+    finishSession();
+    return;
+  }
+  const totalSec = Math.ceil(msLeft / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  const el = document.getElementById('timer-display');
+  if (el) el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function renderTopStats() {
+  const el = document.getElementById('practice-topstats');
+  if (session.mode === 'spaced') {
+    const dominadas = session.pool.filter(q => getEntry(q.id).box >= 4).length;
+    el.innerHTML = `<div class="stat"><b>${dominadas}/${session.pool.length}</b><small>dominadas</small></div>`;
+  } else if (session.mode === 'timed') {
+    el.innerHTML = `<span class="timer-pill" id="timer-display">--:--</span>`;
+  } else if (session.mode === 'exam') {
+    el.innerHTML = `<span class="timer-pill" id="timer-display">--:--</span> <span class="progress-pill">${session.index + 1} / ${session.queue.length}</span>`;
+  } else {
+    el.innerHTML = `<span class="progress-pill">${session.index + 1} / ${session.queue.length}</span>`;
+  }
+}
+
+function pickSpacedQuestion() {
+  const pool = session.pool.filter(q => q.id !== session.lastId || session.pool.length === 1);
+  const weights = pool.map(q => 6 - getEntry(q.id).box);
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+
+function nextQuestion() {
+  if (session.mode !== 'spaced' && session.index >= session.queue.length) {
+    finishSession();
+    return;
+  }
+
+  session.current = (session.mode === 'spaced') ? pickSpacedQuestion() : session.queue[session.index];
+  session.lastId = session.current.id;
+  session.selectedIndex = null;
+  session.locked = false;
+
+  const color = categoryColor(session.current.eje);
+  const ejeEl = document.getElementById('q-eje');
+  ejeEl.textContent = session.current.eje;
+  ejeEl.style.color = color;
+  document.getElementById('q-text').textContent = session.current.question;
+
+  document.getElementById('q-options').innerHTML = session.current.options.map((opt, i) => `
+    <button class="option" data-index="${i}">
+      <span class="letter" style="color:${color}">${LETTERS[i]}</span>
+      <span>${opt}</span>
+    </button>
+  `).join('');
+  document.querySelectorAll('.option').forEach(btn => btn.addEventListener('click', onSelectOption));
+
+  const confirmBtn = document.getElementById('confirm-btn');
+  confirmBtn.disabled = true;
+  confirmBtn.style.display = 'block';
+
+  const feedback = document.getElementById('feedback');
+  feedback.classList.remove('show');
+  feedback.innerHTML = '';
+
+  renderMasteryRow();
+  renderTopStats();
+  document.getElementById('session-count').textContent = `${session.answered} respondidas esta sesión`;
+}
+
+function renderMasteryRow() {
+  const row = document.getElementById('mastery-row');
+  const items = (session.mode === 'spaced') ? session.pool : session.queue;
+  row.innerHTML = items.map((q, i) => {
+    if (session.mode === 'spaced') {
+      const entry = getEntry(q.id);
+      if (q.id === session.current.id && !session.locked) return `<div class="tick" style="background:${categoryColor(q.eje)};opacity:1"></div>`;
+      if (entry.result === 'correct') return `<div class="tick" style="background:var(--correct);opacity:1"></div>`;
+      if (entry.result === 'wrong') return `<div class="tick" style="background:var(--wrong);opacity:1"></div>`;
+      return `<div class="tick"></div>`;
+    } else {
+      if (i === session.index) return `<div class="tick" style="background:${categoryColor(q.eje)};opacity:1"></div>`;
+      if (i < session.index) {
+        const wasWrong = session.missed.some(m => m.q.id === q.id && m.order === i);
+        return `<div class="tick" style="background:${wasWrong ? 'var(--wrong)' : 'var(--correct)'};opacity:1"></div>`;
+      }
+      return `<div class="tick"></div>`;
+    }
+  }).join('');
+}
+
+function onSelectOption(e) {
+  if (session.locked) return;
+  session.selectedIndex = parseInt(e.currentTarget.dataset.index);
+  document.querySelectorAll('.option').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.index) === session.selectedIndex);
+  });
+  document.getElementById('confirm-btn').disabled = false;
+}
+
+function onConfirm() {
+  if (session.locked || session.selectedIndex === null) return;
+  session.locked = true;
+
+  const q = session.current;
+  const isCorrect = session.selectedIndex === q.correct;
+  session.answered++;
+  if (isCorrect) session.correct++;
+  else session.missed.push({ q, order: session.index, selected: session.selectedIndex });
+
+  const entry = getEntry(q.id);
+  entry.box = isCorrect ? Math.min(entry.box + 1, 5) : 1;
+  entry.result = isCorrect ? 'correct' : 'wrong';
+  saveProgress();
+
+  document.querySelectorAll('.option').forEach(btn => {
+    const idx = parseInt(btn.dataset.index);
+    btn.disabled = true;
+    btn.classList.remove('selected');
+    if (idx === q.correct) btn.classList.add('correct');
+    else if (idx === session.selectedIndex) btn.classList.add('wrong');
+    else btn.classList.add('dim');
+  });
+
+  document.getElementById('confirm-btn').style.display = 'none';
+  const feedback = document.getElementById('feedback');
+  feedback.innerHTML = `
+    <div class="verdict ${isCorrect ? 'ok' : 'no'}">${isCorrect ? 'Correcto' : 'Incorrecto'}</div>
+    <div class="explanation">${q.explanation}</div>
+    <button class="next-btn" id="next-btn">${(session.mode !== 'spaced' && session.index === session.queue.length - 1) ? 'Ver resultados' : 'Siguiente pregunta'}</button>
+  `;
+  feedback.classList.add('show');
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (session.mode !== 'spaced') session.index++;
+    nextQuestion();
+  });
+
+  renderMasteryRow();
+  document.getElementById('session-count').textContent = `${session.answered} respondidas esta sesión`;
+}
+
+document.getElementById('confirm-btn').addEventListener('click', onConfirm);
+
+document.getElementById('exit-btn').addEventListener('click', () => {
+  if (session && session.timerInterval) clearInterval(session.timerInterval);
+  document.getElementById('practice-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'block';
+  renderGlobalStats();
+});
+
+document.getElementById('start-btn').addEventListener('click', startSession);
+
+// ==========================================================
+// PANTALLA 3: RESULTADOS
+// ==========================================================
+function finishSession() {
+  if (session.timerInterval) clearInterval(session.timerInterval);
+  document.getElementById('practice-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+
+  const pct = session.answered > 0 ? Math.round((session.correct / session.answered) * 100) : 0;
+  document.getElementById('results-score').textContent = `${pct}%`;
+  document.getElementById('results-sub').textContent = `${session.correct} de ${session.answered} preguntas correctas`;
+
+  document.getElementById('results-breakdown').innerHTML = `
+    <div class="results-stat ok"><b>${session.correct}</b><small>Correctas</small></div>
+    <div class="results-stat no"><b>${session.answered - session.correct}</b><small>Incorrectas</small></div>
+  `;
+
+  // ---- Guardar en el historial (no aplica al modo Clásico, que es infinito) ----
+  if (session.mode !== 'spaced' && session.answered > 0) {
+    pushHistory({ date: dayKey(new Date()), mode: session.mode, correct: session.correct, answered: session.answered, pct });
+  }
+
+  // ---- Puntaje PAES proyectado (solo Simulacro) ----
+  const paesBox = document.getElementById('paes-score-box');
+  if (session.mode === 'exam' && session.answered > 0) {
+    const proyectado = puntajePAESProyectado(session.correct, session.answered);
+    paesBox.style.display = 'block';
+    paesBox.innerHTML = `<b>${proyectado} pts</b><small>Puntaje PAES proyectado (escala oficial DEMRE, sobre ${session.answered} preguntas)</small>`;
+  } else {
+    paesBox.style.display = 'none';
+  }
+
+  // ---- Recomendación tras el diagnóstico inicial ----
+  const diagBox = document.getElementById('diag-recommend');
+  if (session.isDiagnostic) {
+    localStorage.setItem(DIAG_KEY, '1');
+    if (currentUser) {
+      setDoc(userDocRef(currentUser.uid), { diagDone: true }, { merge: true }).catch(() => {});
+    }
+    let msg;
+    if (pct >= 70) msg = 'Buen resultado — prueba partir directo en dificultad <b>Difícil</b>.';
+    else if (pct <= 35) msg = 'Conviene partir en dificultad <b>Fácil</b> para agarrar confianza antes de subir.';
+    else msg = 'Resultado parejo — la opción <b>Mezcla</b> es un buen punto de partida.';
+    diagBox.style.display = 'block';
+    diagBox.innerHTML = `📋 <b>Diagnóstico completado.</b> ${msg}`;
+  } else {
+    diagBox.style.display = 'none';
+  }
+
+  // ---- Desglose de preguntas falladas ----
+  const missedEl = document.getElementById('missed-list');
+  if (session.missed.length > 0) {
+    missedEl.innerHTML = `<h3>Preguntas a repasar (${session.missed.length})</h3>` +
+      session.missed.map(m => {
+        const q = m.q;
+        const color = categoryColor(q.eje);
+        const tuResp = q.options[m.selected];
+        const correcta = q.options[q.correct];
+        return `
+          <div class="missed-item">
+            <div class="missed-eje" style="color:${color}">${q.eje}</div>
+            <div class="missed-q">${q.question}</div>
+            <div class="missed-answers">
+              <div class="wrong-ans">Tu respuesta: ${tuResp}</div>
+              <div class="right-ans">Correcta: ${correcta}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+  } else {
+    missedEl.innerHTML = '';
+  }
+}
+
+document.getElementById('results-again-btn').addEventListener('click', () => {
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'block';
+  renderGlobalStats();
+  renderProgressPanel();
+  renderDiagnosticBanner();
+  updatePoolCount();
+});
+
+// ==========================================================
+// CUENTA: iniciar sesión / crear cuenta / Google / sincronizar
+// ==========================================================
+
+// OJO: getEntry() crea una entrada por defecto (box:1, result:null) para
+// cada pregunta apenas se muestra la pantalla de inicio, así que un objeto
+// "progress" nunca está realmente vacío. Solo cuenta como "hay progreso" si
+// el usuario ya respondió algo de verdad (result != null o box > 1).
+function hasMeaningfulProgress(progressObj) {
+  return Object.values(progressObj || {}).some(e => e.result !== null || e.box > 1);
+}
+function hasLocalData() {
+  return hasMeaningfulProgress(progress) || loadHistory().length > 0;
+}
+
+async function fetchCloudData(uid) {
+  const snap = await getDoc(userDocRef(uid));
+  const cloudProgress = snap.exists() ? (snap.data().progress || {}) : {};
+  const cloudDiagDone = snap.exists() ? !!snap.data().diagDone : false;
+  let cloudHistory = [];
+  try {
+    const histSnap = await getDocs(historyColRef(uid));
+    cloudHistory = histSnap.docs.map(d => d.data());
+  } catch (e) {}
+  return {
+    exists: snap.exists() && (hasMeaningfulProgress(cloudProgress) || cloudHistory.length > 0),
+    progress: cloudProgress, diagDone: cloudDiagDone, history: cloudHistory
+  };
+}
+
+async function uploadLocalToCloud(uid) {
+  await setDoc(userDocRef(uid), {
+    progress,
+    diagDone: !!localStorage.getItem(DIAG_KEY),
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+  const localHist = loadHistory();
+  for (const entry of localHist) {
+    await addDoc(historyColRef(uid), entry);
+  }
+}
+
+function applyCloudToLocal(cloud) {
+  progress = cloud.progress || {};
+  saveProgress();
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(cloud.history || []));
+  if (cloud.diagDone) localStorage.setItem(DIAG_KEY, '1');
+}
+
+// Al iniciar sesión: si hay datos guardados tanto en este dispositivo como
+// en la cuenta, se le pregunta al usuario cuál de los dos quiere conservar.
+async function handleLogin(uid) {
+  const cloud = await fetchCloudData(uid);
+  const localHasData = hasLocalData();
+
+  if (localHasData && cloud.exists) {
+    const useLocal = confirm(
+      'Tienes progreso guardado tanto en este dispositivo como en tu cuenta.\n\n' +
+      'Aceptar = usar el progreso de ESTE DISPOSITIVO (reemplaza el de la nube)\n' +
+      'Cancelar = usar el progreso de TU CUENTA (reemplaza el de este dispositivo)'
+    );
+    if (useLocal) { await uploadLocalToCloud(uid); }
+    else { applyCloudToLocal(cloud); }
+  } else if (localHasData && !cloud.exists) {
+    await uploadLocalToCloud(uid);
+  } else if (!localHasData && cloud.exists) {
+    applyCloudToLocal(cloud);
+  }
+
+  renderGlobalStats();
+  renderProgressPanel();
+  renderDiagnosticBanner();
+  updatePoolCount();
+}
+
+function renderAccountBar() {
+  const bar = document.getElementById('account-bar');
+  if (currentUser) {
+    bar.innerHTML = `
+      <div class="account-info">
+        <span>👤 ${currentUser.email || 'tu cuenta de Google'}</span>
+        <button class="logout-link" id="logout-btn">Cerrar sesión</button>
+      </div>`;
+    document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+  } else {
+    bar.innerHTML = `<button id="login-open-btn">Iniciar sesión para guardar tu progreso en la nube</button>`;
+    document.getElementById('login-open-btn').addEventListener('click', openAuthModal);
+  }
+}
+
+const AUTH_ERROR_MESSAGES = {
+  'auth/invalid-email': 'Ese correo no es válido.',
+  'auth/user-not-found': 'No existe una cuenta con ese correo.',
+  'auth/wrong-password': 'Contraseña incorrecta.',
+  'auth/invalid-credential': 'Correo o contraseña incorrectos.',
+  'auth/email-already-in-use': 'Ya existe una cuenta con ese correo — intenta iniciar sesión.',
+  'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+  'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos e intenta de nuevo.',
+  'auth/popup-closed-by-user': 'Se cerró la ventana de Google antes de terminar.'
+};
+function friendlyAuthError(err) {
+  return AUTH_ERROR_MESSAGES[err.code] || 'Ocurrió un error. Intenta nuevamente.';
+}
+function showAuthError(message) {
+  const el = document.getElementById('auth-error');
+  el.textContent = message;
+  el.style.display = 'block';
+}
+
+function updateAuthModalMode() {
+  document.getElementById('auth-title').textContent = authMode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
+  document.getElementById('auth-submit').textContent = authMode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
+  const switchEl = document.getElementById('auth-switch');
+  switchEl.innerHTML = authMode === 'login'
+    ? '¿No tienes cuenta? <a href="#" id="auth-switch-link">Crea una</a>'
+    : '¿Ya tienes cuenta? <a href="#" id="auth-switch-link">Inicia sesión</a>';
+  document.getElementById('auth-switch-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    authMode = authMode === 'login' ? 'register' : 'login';
+    updateAuthModalMode();
+  });
+}
+
+function openAuthModal() {
+  authMode = 'login';
+  updateAuthModalMode();
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-email').value = '';
+  document.getElementById('auth-password').value = '';
+  document.getElementById('auth-modal').style.display = 'flex';
+}
+function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
+
+document.getElementById('auth-close').addEventListener('click', closeAuthModal);
+document.getElementById('auth-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'auth-modal') closeAuthModal();
+});
+
+document.getElementById('auth-submit').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthError('Completa correo y contraseña.'); return; }
+  document.getElementById('auth-error').style.display = 'none';
+  const btn = document.getElementById('auth-submit');
+  btn.disabled = true;
+  try {
+    if (authMode === 'login') {
+      await signInWithEmailAndPassword(auth, email, password);
+    } else {
+      await createUserWithEmailAndPassword(auth, email, password);
+    }
+    closeAuthModal();
+  } catch (err) {
+    showAuthError(friendlyAuthError(err));
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('auth-google').addEventListener('click', async () => {
+  document.getElementById('auth-error').style.display = 'none';
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    closeAuthModal();
+  } catch (err) {
+    showAuthError(friendlyAuthError(err));
+  }
+});
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  renderAccountBar();
+  if (user) {
+    await handleLogin(user.uid);
+  }
+});
+
+renderAccountBar();
+</script>
+
+</body>
+</html>
