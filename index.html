@@ -344,8 +344,12 @@
   .missed-eje { font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; }
   .missed-q { font-size: 0.9rem; color: var(--ink); margin-bottom: 8px; }
   .missed-answers { font-size: 0.82rem; }
-  .missed-answers .wrong-ans { color: var(--wrong); }
-  .missed-answers .right-ans { color: var(--correct); }
+  .missed-answers .wrong-ans { color: var(--wrong); font-weight: 600; }
+  .missed-answers .right-ans { color: var(--correct); font-weight: 600; margin-top: 10px; }
+  .missed-exp {
+    font-size: 0.85rem; color: var(--ink-2); line-height: 1.5; font-weight: 400;
+    margin: 4px 0 2px;
+  }
 
   .diag-recommend {
     background: var(--correct-bg); border: 1px solid var(--correct); border-radius: 12px;
@@ -2448,13 +2452,18 @@ function finishSession() {
         const color = categoryColor(q.eje);
         const tuResp = q.options[m.selected];
         const correcta = q.options[q.correct];
+        const optExps = q.optionExplanations;
+        const wrongExp = optExps ? optExps[m.selected] : '';
+        const rightExp = optExps ? optExps[q.correct] : (q.explanation || '');
         return `
           <div class="missed-item">
             <div class="missed-eje" style="color:${color}">${q.eje}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
             <div class="missed-q">${q.question}</div>
             <div class="missed-answers">
-              <div class="wrong-ans">Tu respuesta: ${tuResp}</div>
-              <div class="right-ans">Correcta: ${correcta}</div>
+              <div class="wrong-ans">Tu respuesta (${LETTERS[m.selected]}): ${tuResp}</div>
+              ${wrongExp ? `<div class="missed-exp">${wrongExp}</div>` : ''}
+              <div class="right-ans">Correcta (${LETTERS[q.correct]}): ${correcta}</div>
+              ${rightExp ? `<div class="missed-exp">${rightExp}</div>` : ''}
             </div>
           </div>
         `;
