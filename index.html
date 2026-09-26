@@ -90,6 +90,7 @@
   .question {
     font-family: var(--font-display); font-size: 1.35rem; font-weight: 500;
     line-height: 1.4; color: var(--ink); margin-bottom: 30px;
+    white-space: pre-line;
   }
 
   .options { display: flex; flex-direction: column; gap: 10px; }
@@ -342,7 +343,7 @@
     padding: 14px 16px; margin-bottom: 10px;
   }
   .missed-eje { font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; }
-  .missed-q { font-size: 0.9rem; color: var(--ink); margin-bottom: 8px; }
+  .missed-q { font-size: 0.9rem; color: var(--ink); margin-bottom: 8px; white-space: pre-line; }
   .missed-answers { font-size: 0.82rem; }
   .missed-answers .wrong-ans { color: var(--wrong); font-weight: 600; }
   .missed-answers .right-ans { color: var(--correct); font-weight: 600; margin-top: 10px; }
@@ -876,13 +877,13 @@ const OFFICIAL_QUESTIONS = [
 const PRACTICE_QUESTIONS = [
   { id: "o1", eje: "Historia de Chile", correct: 2, dificultad: "moderada",
     question: "Tras la Guerra del Pacífico (1879-1884), Chile incorporó los territorios salitreros de Tarapacá y Antofagasta. Durante las décadas siguientes, el Estado financió una parte creciente de su presupuesto con los impuestos a la exportación de este mineral, sin desarrollar en paralelo una industria manufacturera propia de peso. ¿Qué efecto tuvo esta incorporación en la economía chilena de fines del siglo XIX?",
-    options: ["Redujo la dependencia fiscal de las exportaciones al diversificar los ingresos del Estado", "Impulsó de forma sostenida la industrialización manufacturera del país", "Convirtió al salitre en la principal fuente de ingresos del Estado, profundizando la dependencia de un solo producto", "Diversificó ampliamente la matriz productiva nacional hacia bienes de mayor valor agregado"],
-    explanation: "Los impuestos a la exportación del salitre pasaron a financiar gran parte del presupuesto fiscal chileno, dando origen al llamado 'ciclo del salitre', sin que el país diversificara su producción — todo lo contrario a lo que sugieren las demás alternativas.",
+    options: ["Redujo la dependencia fiscal de las exportaciones al diversificar los ingresos del Estado", "Impulsó de forma sostenida la industrialización manufacturera del país", "Convirtió al salitre en la principal fuente de ingresos del Estado, profundizando la dependencia de un solo producto", "Todas las anteriores son correctas."],
+    explanation: "Los impuestos a la exportación del salitre pasaron a financiar gran parte del presupuesto fiscal chileno, dando origen al llamado 'ciclo del salitre', sin que el país diversificara su producción — todo lo contrario a lo que sugieren las demás alternativas, por lo que no todas pueden ser correctas.",
     optionExplanations: [
       "El salitre no diversificó los ingresos fiscales; al contrario, los concentró cada vez más en un solo producto de exportación.",
       "No hubo una industrialización manufacturera sostenida en este período; la economía se mantuvo centrada en la exportación de materias primas.",
       "Correcta: el salitre se convirtió en la principal fuente de ingresos fiscales, generando una fuerte dependencia de un solo producto de exportación.",
-      "La matriz productiva no se diversificó hacia bienes de mayor valor agregado; siguió dependiendo de la exportación de salitre en bruto."
+      "Incorrecta como respuesta: no todas son correctas, ya que A y B describen efectos contrarios a lo ocurrido realmente (no hubo diversificación de ingresos ni industrialización sostenida)."
     ] },
   { id: "o2", eje: "Historia de Chile", correct: 3, dificultad: "moderada",
     question: "La Guerra Civil de 1891 enfrentó al presidente Balmaceda con el Congreso por el control del gasto público y las atribuciones del Ejecutivo, dando paso posteriormente a la llamada República Parlamentaria. A diferencia del período previo, donde el Presidente concentraba amplias facultades, ¿qué característica definió a este nuevo período (1891-1925)?",
@@ -957,13 +958,13 @@ const PRACTICE_QUESTIONS = [
     ] },
   { id: "o9", eje: "Historia Universal", correct: 0, dificultad: "moderada",
     question: "La caída del Muro de Berlín en 1989 es considerada un hito simbólico del fin de la Guerra Fría, ocurrida más de cuarenta años después de que ambas Alemanias se constituyeran como Estados separados en 1949. ¿Qué proceso político posterior estuvo directamente vinculado a la caída del Muro?",
-    options: ["La reunificación de Alemania en 1990, poniendo fin a la división de posguerra", "La creación de la República Federal Alemana, ocurrida cuatro décadas antes de ese hito", "El ingreso de Alemania Oriental a la OTAN, alianza del bloque opuesto durante la Guerra Fría", "La firma de un nuevo Pacto de Varsovia entre ambas Alemanias tras la caída del Muro"],
-    explanation: "La caída del Muro aceleró la reunificación alemana de 1990; las demás opciones describen hechos anteriores a 1989, del bloque opuesto, o un pacto que en realidad se disolvió en esos mismos años, no se renovó.",
+    options: ["La reunificación de Alemania en 1990, poniendo fin a la división de posguerra", "La creación de la República Federal Alemana, ocurrida cuatro décadas antes de ese hito", "El ingreso de Alemania Oriental a la OTAN, alianza del bloque opuesto durante la Guerra Fría", "Todas las anteriores son correctas."],
+    explanation: "La caída del Muro aceleró la reunificación alemana de 1990; las demás opciones describen hechos anteriores a 1989 o del bloque opuesto, por lo que no todas pueden ser correctas.",
     optionExplanations: [
       "Correcta: la caída del Muro de Berlín en 1989 aceleró directamente el proceso de reunificación alemana, concretado en 1990.",
       "La creación de la República Federal Alemana ocurrió en 1949, cuatro décadas antes de la caída del Muro, por lo que no es un proceso posterior a este hito.",
       "Alemania reunificada se integró a la OTAN, pero no fue 'Alemania Oriental' la que ingresó como bloque separado; además la RDA pertenecía al bloque opuesto a la OTAN.",
-      "El Pacto de Varsovia se disolvió en 1991, tras la caída del Muro; no se firmó un nuevo pacto entre ambas Alemanias."
+      "Incorrecta como respuesta: no todas son correctas, ya que B describe un hecho anterior a la caída del Muro y C atribuye erróneamente el ingreso a la OTAN a 'Alemania Oriental' como bloque separado."
     ] },
   { id: "o10", eje: "Historia Universal", correct: 2, dificultad: "moderada",
     question: "Antes de los procesos de descolonización de mediados del siglo XX, las potencias europeas habían expandido su dominio colonial sobre África y Asia durante el siglo XIX, en plena etapa de industrialización acelerada en Europa. ¿Qué motivación económica explica principalmente esa expansión colonial previa?",
@@ -998,13 +999,13 @@ const PRACTICE_QUESTIONS = [
 
   { id: "o13", eje: "Formación Ciudadana", correct: 1, dificultad: "moderada",
     question: "En Chile, la Contraloría General de la República cumple un rol de control sobre los actos de la administración del Estado, a diferencia del Congreso, que concentra la función legislativa, y de los tribunales, que resuelven conflictos jurídicos. ¿Cuál es una de las funciones principales de la Contraloría?",
-    options: ["Legislar sobre materias presupuestarias del Estado, función propia del Congreso", "Fiscalizar la legalidad de los actos de la administración pública", "Representar al país en tribunales internacionales, función del Ejecutivo", "Administrar directamente los fondos de las municipalidades, que gestionan sus propios recursos"],
-    explanation: "La Contraloría fiscaliza la legalidad de los actos administrativos; las otras opciones confunden esa función con atribuciones que corresponden al Congreso, al Ejecutivo o a los propios municipios.",
+    options: ["Legislar sobre materias presupuestarias del Estado, función propia del Congreso", "Fiscalizar la legalidad de los actos de la administración pública", "Representar al país en tribunales internacionales, función del Ejecutivo", "Todas las anteriores son correctas."],
+    explanation: "La Contraloría fiscaliza la legalidad de los actos administrativos; las otras opciones confunden esa función con atribuciones que corresponden al Congreso o al Ejecutivo, por lo que no todas pueden ser correctas.",
     optionExplanations: [
       "Legislar sobre materias presupuestarias es una función del Congreso, no de la Contraloría.",
       "Correcta: fiscalizar la legalidad de los actos de la administración pública es una de las funciones centrales y distintivas de la Contraloría General de la República.",
       "Representar al país ante tribunales internacionales es una función del Poder Ejecutivo, no de la Contraloría.",
-      "Los municipios administran directamente sus propios fondos; la Contraloría fiscaliza esa gestión, pero no la administra."
+      "Incorrecta como respuesta: no todas son correctas, ya que A y C describen funciones que en realidad corresponden al Congreso y al Ejecutivo, no a la Contraloría."
     ] },
   { id: "o14", eje: "Formación Ciudadana", correct: 0, dificultad: "moderada",
     question: "Un plebiscito y una elección parlamentaria son ambos mecanismos de participación electoral regulados por el mismo padrón y la misma institucionalidad electoral chilena. Sin embargo, ¿en qué se diferencia principalmente el plebiscito de una elección parlamentaria?",
@@ -1018,13 +1019,13 @@ const PRACTICE_QUESTIONS = [
     ] },
   { id: "o15", eje: "Formación Ciudadana", correct: 2, dificultad: "moderada",
     question: "Los derechos humanos suelen clasificarse en generaciones según su origen histórico: los de 'primera generación' (civiles y políticos) surgieron con las revoluciones liberales de los siglos XVIII y XIX. ¿Cuál es una característica de los derechos de 'segunda generación', surgidos posteriormente?",
-    options: ["Se limitan a las libertades individuales de expresión y reunión, igual que los de primera generación", "Surgieron cronológicamente antes que los derechos civiles y políticos de primera generación", "Están orientados a garantizar derechos económicos, sociales y culturales, exigiendo un rol activo del Estado", "No requieren ningún tipo de acción del Estado para hacerse efectivos"],
-    explanation: "Los derechos de segunda generación (educación, salud, trabajo) surgieron después de los civiles y políticos, y a diferencia de estos, exigen un rol activo del Estado — no son solo libertades individuales ni se ejercen sin intervención estatal.",
+    options: ["Buscan garantizar derechos económicos, sociales y culturales, pero, a diferencia de los de primera generación, se satisfacen únicamente mediante la abstención del Estado.", "Corresponden a derechos como la libertad de expresión, de reunión y de participación política, y exigen igualmente un rol activo del Estado para su ejercicio.", "Están orientados a garantizar derechos económicos, sociales y culturales, exigiendo un rol activo del Estado para su satisfacción.", "Surgieron por las luchas del movimiento obrero durante el siglo XIX, consolidándose jurídicamente antes que los derechos civiles y políticos de primera generación."],
+    explanation: "Los derechos de segunda generación (educación, salud, trabajo, vivienda) surgieron después de los civiles y políticos de primera generación, y a diferencia de estos, exigen un rol activo (no meramente abstencionista) del Estado para hacerse efectivos.",
     optionExplanations: [
-      "Los derechos de segunda generación no se limitan a libertades individuales de expresión y reunión; eso corresponde a los de primera generación.",
-      "Los derechos de segunda generación surgieron después, no antes, que los derechos civiles y políticos de primera generación.",
-      "Correcta: los derechos de segunda generación (educación, salud, trabajo) buscan garantizar condiciones económicas, sociales y culturales, exigiendo un rol activo del Estado.",
-      "A diferencia de los de primera generación, los derechos de segunda generación sí requieren una acción positiva y activa del Estado para su cumplimiento."
+      "Incorrecta: identifica bien el contenido (derechos económicos, sociales y culturales), pero se equivoca en el mecanismo — estos derechos exigen una acción POSITIVA del Estado (prestaciones, políticas públicas), no su mera abstención; la abstención describe más bien a los derechos de primera generación.",
+      "Incorrecta: la libertad de expresión, de reunión y de participación política son derechos civiles y políticos, propios de la primera generación, no de la segunda.",
+      "Correcta: los derechos de segunda generación (educación, salud, trabajo, vivienda) buscan garantizar condiciones económicas, sociales y culturales, y requieren que el Estado actúe activamente mediante prestaciones y políticas públicas para hacerlos efectivos.",
+      "Incorrecta: si bien estos derechos están vinculados históricamente a las luchas del movimiento obrero, se consolidaron jurídicamente DESPUÉS de los derechos civiles y políticos de primera generación, no antes."
     ] },
   { id: "o16", eje: "Formación Ciudadana", correct: 3, dificultad: "moderada",
     question: "A diferencia del Poder Judicial, que resuelve conflictos aplicando la ley, o del Poder Ejecutivo, que administra el Estado, los partidos políticos ocupan un lugar distinto dentro del entramado institucional de una democracia representativa. ¿Cuál es una función central que cumplen estas organizaciones?",
@@ -1350,13 +1351,13 @@ const HARD_QUESTIONS = [
 
   { id: "h10", eje: "Economía", dificultad: "moderada", correct: 1,
     question: "Un banco central puede enfrentar un dilema entre controlar la inflación y sostener el crecimiento económico al fijar su tasa de interés. ¿Por qué se produce esta tensión?",
-    options: ["Porque subir y bajar la tasa de interés siempre generan el mismo efecto económico", "Porque una tasa más alta reduce la inflación pero también puede frenar el consumo y la inversión, afectando el crecimiento", "Porque la tasa de interés no tiene ninguna relación con el nivel de precios", "Porque el crecimiento económico depende exclusivamente del gasto fiscal, no de la política monetaria"],
-    explanation: "Subir la tasa de interés ayuda a contener la inflación al encarecer el crédito, pero ese mismo efecto desincentiva el consumo y la inversión, lo que puede ralentizar el crecimiento — de ahí el dilema de política monetaria.",
+    options: ["Porque subir y bajar la tasa de interés siempre generan el mismo efecto económico", "Porque una tasa más alta reduce la inflación pero también puede frenar el consumo y la inversión, afectando el crecimiento", "Porque la tasa de interés no tiene ninguna relación con el nivel de precios", "Todas las anteriores son correctas."],
+    explanation: "Subir la tasa de interés ayuda a contener la inflación al encarecer el crédito, pero ese mismo efecto desincentiva el consumo y la inversión, lo que puede ralentizar el crecimiento — de ahí el dilema de política monetaria; las otras alternativas niegan relaciones que sí existen, por lo que no todas pueden ser correctas.",
     optionExplanations: [
       "Subir y bajar la tasa de interés generan efectos distintos y hasta opuestos sobre la economía; no producen el mismo resultado.",
       "Correcta: subir la tasa de interés ayuda a contener la inflación al encarecer el crédito, pero ese mismo efecto puede frenar el consumo y la inversión, generando el dilema descrito.",
       "La tasa de interés sí tiene una relación directa con el nivel de precios; es una de las principales herramientas para controlar la inflación.",
-      "El crecimiento económico no depende exclusivamente del gasto fiscal; la política monetaria (tasa de interés) también influye significativamente en él."
+      "Incorrecta como respuesta: no todas son correctas, ya que A y C niegan una relación entre la tasa de interés y la economía que sí existe."
     ] },
   { id: "h11", eje: "Economía", dificultad: "moderada", correct: 3,
     question: "En una economía con alta informalidad laboral, el aumento del empleo no necesariamente se traduce en mayor recaudación para el sistema de seguridad social. ¿Por qué ocurre esto?",
@@ -1370,14 +1371,14 @@ const HARD_QUESTIONS = [
     ] },
   { id: "h12", eje: "Economía", dificultad: "moderada", correct: 0,
     question: "La economía circular propone reducir el uso de recursos naturales vírgenes mediante la reutilización y el reciclaje. ¿Qué diferencia fundamental existe entre este modelo y la economía lineal tradicional?",
-    options: ["La economía circular busca cerrar el ciclo de vida de los productos, mientras la lineal sigue un esquema de 'extraer-producir-desechar'", "La economía circular elimina por completo la producción industrial", "La economía lineal se basa exclusivamente en el reciclaje de materiales", "Ambos modelos son idénticos en su forma de gestionar los recursos"],
+    options: ["La economía circular busca cerrar el ciclo de vida de los productos, mientras la economía lineal sigue un esquema de 'extraer-producir-desechar'.", "La economía circular prioriza el reciclaje de materiales por sobre su reutilización directa, mientras que la economía lineal privilegia la reutilización antes que el reciclaje.", "La economía lineal incorpora la reutilización de materiales en distintas etapas de producción, pero no contempla su reciclaje una vez terminada su vida útil.", "Ambos modelos comparten el objetivo de reducir la extracción de recursos naturales vírgenes, diferenciándose únicamente en la velocidad con que gestionan los residuos generados."],
     explanation: "El modelo lineal tradicional sigue la lógica de extraer materias primas, producir y desechar, mientras que la economía circular busca mantener los materiales en uso el mayor tiempo posible mediante reutilización y reciclaje.",
     optionExplanations: [
       "Correcta: la economía circular busca cerrar el ciclo de vida de los productos mediante reutilización y reciclaje, mientras que la economía lineal tradicional sigue el esquema de 'extraer-producir-desechar'.",
-      "La economía circular no elimina la producción industrial; busca transformar la forma en que esta gestiona los materiales y residuos.",
-      "La economía lineal no se basa en el reciclaje; sigue más bien un esquema de uso único de los recursos hasta su desecho.",
-      "Ambos modelos no son idénticos; se diferencian justamente en cómo gestionan el ciclo de vida de los materiales y productos, como señala la opción correcta."
-    ] }
+      "Incorrecta: es al revés — dentro de la jerarquía de la economía circular, la reutilización se prioriza por sobre el reciclaje (que implica reprocesar el material), y la economía lineal no privilegia la reutilización, ya que no contempla un ciclo de retorno de los materiales.",
+      "Incorrecta: la economía lineal, por definición, no incorpora una etapa de reutilización de los materiales; su lógica es de uso único hasta el desecho ('extraer-producir-desechar'), sin ciclos de retorno.",
+      "Incorrecta: ambos modelos NO comparten ese objetivo — la economía lineal no busca reducir la extracción de recursos vírgenes, sino que depende de un flujo constante de nuevas materias primas; la diferencia entre ambos es estructural (ciclo cerrado vs. uso único), no de velocidad."
+    ] },
 ];
 
 // ---- Lote adicional: preguntas largas, con cita para interpretar/ubicar en
@@ -1432,14 +1433,14 @@ const EXTRA_QUESTIONS = [
 
   { id: "e7", eje: "Formación Ciudadana", dificultad: "moderada",
     question: "Lee el siguiente fragmento sobre el funcionamiento de una democracia: «De poco sirve que la Constitución garantice el derecho a un abogado si, en la práctica, solo quienes pueden pagar uno logran una defensa adecuada. La igualdad ante la ley, cuando no va acompañada de condiciones reales para ejercerla, corre el riesgo de quedar en el papel». (Fuente ficticia con fines de práctica). ¿Qué distinción conceptual ilustra mejor este fragmento?",
-    options: ["La diferencia entre poder Legislativo y poder Judicial", "La diferencia entre democracia formal (marco legal) y democracia sustantiva (ejercicio real de derechos)", "La diferencia entre Estado unitario y Estado federal", "La diferencia entre plebiscito y elección parlamentaria"],
+    options: ["La diferencia entre igualdad ante la ley e igualdad de oportunidades, entendidas como garantías equivalentes en la práctica.", "La diferencia entre democracia formal (marco legal) y democracia sustantiva (ejercicio real de derechos).", "La diferencia entre derechos civiles y derechos sociales, entendida como dos categorías jurídicas que se ejercen siempre bajo las mismas condiciones materiales.", "La diferencia entre Estado de derecho y Estado de bienestar, entendida como dos modelos institucionales mutuamente excluyentes."],
     correct: 1,
     explanation: "El fragmento contrasta la existencia formal de un derecho (el texto constitucional) con las condiciones reales para ejercerlo, ilustrando la distinción entre democracia formal y democracia sustantiva.",
     optionExplanations: [
-      "El fragmento no distingue entre poder Legislativo y Judicial; se refiere al acceso real a un derecho ya reconocido legalmente.",
+      "Incorrecta: el fragmento usa justamente el concepto de 'igualdad ante la ley' para mostrar que NO es equivalente, en la práctica, a poder ejercer realmente un derecho; afirmar que son equivalentes contradice el punto central del texto.",
       "Correcta: el fragmento contrasta la existencia formal de un derecho (el marco legal) con las condiciones reales para ejercerlo, ilustrando la diferencia entre democracia formal y sustantiva.",
-      "El fragmento no aborda la diferencia entre Estado unitario y federal, tema ajeno al contenido citado.",
-      "El fragmento no se refiere a la diferencia entre plebiscito y elección parlamentaria, sino al acceso desigual a la justicia."
+      "Incorrecta: el fragmento no compara categorías de derechos (civiles vs. sociales), sino la distancia entre el reconocimiento legal de un derecho y su ejercicio efectivo; además, es falso que estos derechos se ejerzan siempre bajo las mismas condiciones materiales.",
+      "Incorrecta: el fragmento no contrapone modelos institucionales de Estado, sino la brecha entre lo que la ley garantiza en el papel y lo que ocurre en la práctica; tampoco es correcto presentar el Estado de derecho y el Estado de bienestar como mutuamente excluyentes."
     ] },
   { id: "e8", eje: "Formación Ciudadana", dificultad: "moderada",
     question: "Lee el siguiente fragmento sobre la relación entre medios digitales y opinión pública: «Antes, para informarse sobre política había que buscar activamente el periódico o encender el noticiario. Hoy, la información llega sola, seleccionada por un algoritmo que no tiene otro objetivo que mantenernos mirando la pantalla el mayor tiempo posible, no necesariamente informarnos mejor». (Fuente ficticia con fines de práctica). ¿Qué riesgo para la democracia se desprende principalmente de este fragmento?",
@@ -1521,15 +1522,15 @@ const EXTRA_QUESTIONS = [
       "El PIB per cápita no mide exclusivamente el gasto público; es un indicador del ingreso o producción promedio por habitante."
     ] },
   { id: "e17", eje: "Historia Universal", dificultad: "moderada",
-    question: "Entre los autoritarismos es posible advertir ciertas características particulares. Considera los siguientes enunciados: I. El nazismo desarrolló una clara postura racista que lo llevó a la 'solución final', es decir, el intento de eliminar a quienes consideraba inferiores o una carga para el Estado. II. El fascismo italiano era abiertamente internacionalista, lo que lo emparentaba con el estalinismo. III. El estalinismo soviético parte de la premisa de una alta intervención del Estado en la economía, a diferencia del fascismo, que dejaba toda la actividad económica en manos del mercado. ¿Cuál(es) de los enunciados anteriores es (son) correcto(s)?",
-    options: ["Solo I", "Solo II", "I y II", "II y III"],
-    correct: 0,
-    explanation: "Solo el enunciado I es correcto: el fascismo italiano era nacionalista, no internacionalista, y también tuvo fuerte intervención estatal en la economía (corporativismo), por lo que II y III son falsos.",
+    question: "Entre los autoritarismos es posible advertir ciertas características particulares. Considera los siguientes enunciados:\nI. El nazismo desarrolló una clara postura racista que lo llevó a la 'solución final', es decir, el intento de eliminar a quienes consideraba inferiores o una carga para el Estado.\nII. El fascismo italiano era abiertamente internacionalista, lo que lo emparentaba con el estalinismo.\nIII. El estalinismo soviético parte de la premisa de una alta intervención del Estado en la economía, a diferencia del fascismo, que dejaba toda la actividad económica en manos del mercado.\n¿Cuál(es) de los enunciados anteriores es (son) correcto(s)?",
+    options: ["Solo I", "I y III", "I y II", "II y III"],
+    correct: 1,
+    explanation: "Los enunciados I y III son correctos. El nazismo desarrolló efectivamente una ideología racista que derivó en la 'solución final'. El estalinismo soviético, por su parte, se basó en una economía centralmente planificada con altísima intervención estatal, mientras que el fascismo italiano, aunque coordinaba la economía mediante el corporativismo, mantuvo la propiedad privada y dejó la actividad económica fundamentalmente en manos del mercado, a diferencia del control estatal total soviético. El enunciado II es falso: el fascismo italiano era fuertemente nacionalista, no internacionalista, lo que lo distancia del estalinismo en ese aspecto.",
     optionExplanations: [
-      "Correcta: solo el enunciado I es correcto, ya que el nazismo desarrolló efectivamente una ideología racista que derivó en la 'solución final'; los enunciados II y III son falsos.",
-      "El enunciado II es falso: el fascismo italiano era fuertemente nacionalista, no internacionalista, lo que lo aleja del estalinismo en ese aspecto.",
-      "Esta combinación (I y II) es incorrecta porque el enunciado II es falso, como se explicó.",
-      "Esta combinación (II y III) es incorrecta porque ambos enunciados son falsos: el fascismo era nacionalista y tuvo fuerte intervención estatal, no dejó la economía completamente al mercado."
+      "Esta alternativa es incompleta: el enunciado I es correcto, pero el enunciado III también lo es (el estalinismo tuvo alta intervención estatal en la economía, a diferencia del fascismo), por lo que la respuesta debe incluir a ambos.",
+      "Correcta: los enunciados I y III son correctos. El nazismo desarrolló una ideología racista que derivó en la 'solución final', y el estalinismo se basó en una economía centralmente planificada por el Estado, a diferencia del fascismo, que dejó la actividad económica en manos del mercado. El enunciado II es falso, ya que el fascismo italiano era nacionalista, no internacionalista.",
+      "Esta combinación es incorrecta porque el enunciado II es falso: el fascismo italiano era fuertemente nacionalista, no internacionalista, lo que lo aleja del estalinismo en ese aspecto.",
+      "Esta combinación es incorrecta porque el enunciado II es falso. El enunciado III sí es correcto, pero al estar emparejado aquí con el II (falso) en lugar de con el I, la alternativa completa no es la correcta."
     ] },
   { id: "e18", eje: "Historia Universal", dificultad: "moderada",
     question: "La crisis económica de 1929 es una de las experiencias más lamentables de la historia del mundo occidental. Con respecto a ella, ¿cuál de las siguientes afirmaciones es falsa?",
@@ -1630,14 +1631,14 @@ const NEW_DIFFICULT_QUESTIONS = [
     bonus: true },
   { id: "d8", eje: "Historia Universal", dificultad: "dificil",
     question: "La Conferencia de Bandung (1955) es considerada un hito en la configuración del llamado 'Tercer Mundo' durante la Guerra Fría. ¿Cuál de las siguientes alternativas describe correctamente su significado histórico?",
-    options: ["Reunió a representantes de países asiáticos y africanos recientemente descolonizados o en proceso de descolonización, sentando las bases del Movimiento de Países No Alineados frente a los bloques de la Guerra Fría", "Fue la conferencia en la que Estados Unidos y la Unión Soviética acordaron formalmente la división de Alemania en dos Estados", "Estableció la creación de la Organización del Tratado del Atlántico Norte (OTAN) como alianza militar occidental", "Reunió exclusivamente a las potencias europeas para negociar la independencia de sus colonias africanas"],
+    options: ["Reunió a representantes de países asiáticos y africanos recientemente descolonizados o en proceso de descolonización, sentando las bases del Movimiento de Países No Alineados frente a los bloques de la Guerra Fría.", "Reunió a países de Asia, África y América Latina para constituir formalmente el Movimiento de Países No Alineados como organización internacional con sede permanente.", "Convocó a las potencias coloniales europeas junto a sus antiguas colonias asiáticas y africanas para negociar en conjunto los términos de su independencia.", "Marcó la incorporación formal de los países recién descolonizados de Asia y África a la Organización de las Naciones Unidas, en el marco de la Guerra Fría."],
     correct: 0,
     explanation: "La Conferencia de Bandung reunió en Indonesia a 29 países de Asia y África, muchos recién independizados, que buscaban afirmar una posición autónoma frente a los bloques capitalista y comunista de la Guerra Fría. Este espíritu daría origen, años más tarde, al Movimiento de Países No Alineados.",
     optionExplanations: [
       "Correcta: Bandung reunió a países afroasiáticos descolonizados o en proceso de descolonización y sentó las bases del No Alineamiento frente a la lógica bipolar de la Guerra Fría.",
-      "La división de Alemania se definió progresivamente entre 1945 y 1949 por decisiones de las potencias ocupantes, no en la Conferencia de Bandung de 1955.",
-      "La OTAN se creó en 1949 mediante un tratado firmado por Estados Unidos y países de Europa occidental, sin relación con la Conferencia de Bandung.",
-      "Bandung reunió precisamente a países afroasiáticos, no a las potencias coloniales europeas; su sentido fue de afirmación autónoma frente a estas últimas."
+      "Incorrecta: a Bandung asistieron países de Asia y África, sin representación de América Latina, y el Movimiento de Países No Alineados se constituyó formalmente recién en 1961, en la Conferencia de Belgrado, no en Bandung.",
+      "Incorrecta: Bandung reunió únicamente a países afroasiáticos ya independientes o en proceso de descolonización; las potencias coloniales europeas no participaron, y la conferencia no tuvo por objeto negociar términos de independencia con ellas.",
+      "Incorrecta: Bandung no fue una instancia de ingreso a la ONU (proceso que cada país gestiona por separado); su propósito fue afirmar una posición política autónoma frente a los bloques de la Guerra Fría."
     ] },
   { id: "d9", eje: "Historia Universal", dificultad: "dificil",
     question: "El fascismo italiano, el nazismo alemán y el estalinismo soviético han sido clasificados en ciertas corrientes historiográficas como regímenes totalitarios. Sin desconocer ese rasgo común, ¿cuál de las siguientes alternativas identifica correctamente una diferencia relevante entre ellos en cuanto al fundamento de su legitimidad ideológica?",
@@ -1723,14 +1724,14 @@ const NEW_DIFFICULT_QUESTIONS = [
 
   { id: "d16", eje: "Economía", dificultad: "dificil",
     question: "El modelo de industrialización por sustitución de importaciones (ISI), aplicado en Chile entre las décadas de 1930 y 1970, y el modelo económico aplicado desde 1975 en adelante representan dos orientaciones distintas de política económica. ¿Cuál de las siguientes alternativas describe correctamente una diferencia entre ambos modelos?",
-    options: ["El modelo ISI protegía la industria nacional mediante aranceles y promovía la producción interna a través de la CORFO, mientras el modelo aplicado desde 1975 favoreció la apertura comercial y la reducción de aranceles para insertar a Chile en el mercado internacional", "Ambos modelos compartieron idéntica política arancelaria, manteniendo el comercio exterior completamente cerrado", "El modelo aplicado desde 1975 aumentó los aranceles a las importaciones para proteger la industria nacional creada por la CORFO", "El modelo ISI se caracterizó por la apertura irrestricta al comercio internacional desde su origen en la década de 1930"],
+    options: ["El modelo ISI protegía la industria nacional mediante aranceles y promovía la producción interna a través de la CORFO, mientras el modelo aplicado desde 1975 favoreció la apertura comercial y la reducción de aranceles para insertar a Chile en el mercado internacional", "Ambos modelos compartieron idéntica política arancelaria, manteniendo el comercio exterior completamente cerrado", "El modelo aplicado desde 1975 aumentó los aranceles a las importaciones para proteger la industria nacional creada por la CORFO", "Todas las anteriores son correctas."],
     correct: 0,
-    explanation: "El modelo ISI buscó desarrollar la industria nacional protegiéndola de la competencia externa mediante aranceles altos y el impulso estatal a través de la CORFO. El modelo aplicado desde 1975, en cambio, redujo drásticamente los aranceles y promovió la apertura comercial, apostando por las ventajas comparativas de Chile en el mercado internacional.",
+    explanation: "El modelo ISI buscó desarrollar la industria nacional protegiéndola de la competencia externa mediante aranceles altos y el impulso estatal a través de la CORFO. El modelo aplicado desde 1975, en cambio, redujo drásticamente los aranceles y promovió la apertura comercial, apostando por las ventajas comparativas de Chile en el mercado internacional; las demás alternativas describen políticas arancelarias opuestas a las reales, por lo que no todas pueden ser correctas.",
     optionExplanations: [
       "Correcta: el contraste entre proteccionismo orientado al mercado interno (ISI) y apertura comercial orientada al mercado externo (post-1975) es la diferencia central entre ambos modelos.",
       "No compartieron la misma política arancelaria: el modelo ISI fue marcadamente proteccionista, mientras el modelo posterior a 1975 abrió la economía al comercio exterior.",
       "Es lo contrario a lo ocurrido: el modelo aplicado desde 1975 redujo los aranceles en vez de aumentarlos, abriendo la economía a la competencia externa.",
-      "El modelo ISI se caracterizó justamente por el proteccionismo arancelario y no por la apertura irrestricta, que es propia del modelo posterior a 1975."
+      "Incorrecta como respuesta: no todas son correctas, ya que B y C describen políticas arancelarias opuestas a las que realmente aplicó cada modelo."
     ],
     bonus: true },
   { id: "d17", eje: "Economía", dificultad: "dificil",
@@ -2320,11 +2321,10 @@ const ADDITIONAL_QUESTIONS = [
     ] },
   { id: "v49", eje: "Formación Ciudadana", dificultad: "moderada",
     question: "\"Son organizaciones libremente constituidas por trabajadores del sector privado y/o de empresas del Estado [...] Tienen el objetivo, entre otros, asumir la representación y legítima defensa de sus asociados, así como promover sus intereses económicos, sociales y culturales\". De acuerdo con el texto y tus conocimientos podemos afirmar que los sindicatos:",
-    options: ["Asumen la representación de los trabajadores en el ejercicio de sus derechos.", "Representan a sus afiliados en las instancias de negociación colectiva.", "Velan por el cumplimiento de las normas de trabajo y de seguridad social.", "Pueden existir en empresas públicas y privadas.", "Todas las anteriores."],
-    correct: 4,
-    explanation: "Los sindicatos cumplen simultáneamente funciones de representación de derechos, participación en la negociación colectiva, fiscalización del cumplimiento normativo laboral y previsional, y pueden constituirse tanto en el sector privado como en empresas del Estado, según el propio texto y la legislación laboral.",
+    options: ["Representan a sus afiliados en las instancias de negociación colectiva.", "Velan por el cumplimiento de las normas de trabajo y de seguridad social.", "Pueden existir en empresas públicas y privadas.", "Todas las anteriores."],
+    correct: 3,
+    explanation: "Los sindicatos cumplen simultáneamente funciones de participación en la negociación colectiva y de fiscalización del cumplimiento normativo laboral y previsional, y pueden constituirse tanto en el sector privado como en empresas del Estado, según el propio texto y la legislación laboral, por lo que todas las afirmaciones anteriores son correctas.",
     optionExplanations: [
-      "Incompleta: es una función real de los sindicatos, pero no la única.",
       "Incompleta: es una función real de los sindicatos, pero no la única.",
       "Incompleta: es una función real de los sindicatos, pero no la única.",
       "Incompleta: es correcto según el propio texto, pero no es la única afirmación válida.",
