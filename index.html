@@ -84,7 +84,20 @@
 
   .eje {
     font-size: 0.8rem; color: var(--gold); font-weight: 600;
+  }
+
+  .eje-group {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     margin-bottom: 18px;
+  }
+
+  .code-badge {
+    display: inline-flex; align-items: center;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+    color: var(--ink-soft); background: var(--paper-2);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 2px 9px;
   }
 
   .question {
@@ -167,6 +180,39 @@
   .opt-exp b { font-family: var(--font-display); margin-right: 4px; }
   .opt-exp.correct { border-color: var(--correct); background: var(--correct-bg); }
   .opt-exp.chosen-wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+
+  /* ---------- CHAT POR PREGUNTA ---------- */
+  .qchat { margin-top: 16px; }
+  .qchat-toggle {
+    background: none; border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 9px 14px; font-family: var(--font-body); font-size: 0.88rem;
+    color: var(--ink-2); cursor: pointer; transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .qchat-toggle:hover { border-color: var(--select); background: var(--select-bg); }
+  .qchat-box {
+    margin-top: 10px; border: 1.5px solid var(--line); border-radius: 14px;
+    padding: 12px; background: rgba(255,255,255,0.5);
+  }
+  .qchat-messages { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
+  .qchat-msg { font-size: 0.88rem; line-height: 1.5; padding: 8px 12px; border-radius: 12px; max-width: 90%; }
+  .qchat-msg.user { align-self: flex-end; background: var(--select-bg); color: var(--ink); }
+  .qchat-msg.bot { align-self: flex-start; background: var(--paper-2); color: var(--ink-2); border: 1px solid var(--line); }
+  .qchat-msg.bot.pending { color: var(--ink-soft); font-style: italic; }
+  .qchat-msg.bot.error { color: var(--wrong); border-color: var(--wrong); background: var(--wrong-bg); }
+  .qchat-input-row { display: flex; gap: 8px; }
+  .qchat-input {
+    flex: 1; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line);
+    font-family: var(--font-body); font-size: 0.9rem; color: var(--ink);
+  }
+  .qchat-input:disabled { opacity: 0.6; }
+  .qchat-send {
+    padding: 10px 16px; border: none; border-radius: 10px; background: var(--ink);
+    color: var(--paper); font-family: var(--font-display); font-weight: 600;
+    font-size: 0.88rem; cursor: pointer;
+  }
+  .qchat-send:hover:not(:disabled) { background: var(--ink-2); }
+  .qchat-send:disabled { opacity: 0.5; cursor: default; }
+  .qchat-hint { font-size: 0.75rem; color: var(--ink-soft); margin-top: 6px; }
 
   .results-stat.bonus b { color: var(--gold); }
   .recovered-note {
@@ -2375,6 +2421,24 @@ const QUESTIONS = PRACTICE_QUESTIONS.concat(HARD_QUESTIONS).concat(EXTRA_QUESTIO
 // al azar, cuando el interruptor de preguntas bonus está activado. ----
 const NORMAL_QUESTIONS = QUESTIONS.filter(q => !q.bonus);
 const BONUS_QUESTIONS = QUESTIONS.filter(q => q.bonus);
+
+// ---- Código corto de identificación por pregunta (ej. #hc7, #ec3) ----
+// Prefijo según eje + número correlativo según el orden de aparición en
+// QUESTIONS (orden fijo, ya que es la concatenación de arrays estáticos).
+const EJE_CODE_PREFIX = {
+  "Historia de Chile": "hc",
+  "Historia Universal": "hu",
+  "Formación Ciudadana": "fc",
+  "Economía": "ec"
+};
+(function assignQuestionCodes() {
+  const counters = {};
+  QUESTIONS.forEach(q => {
+    const prefix = EJE_CODE_PREFIX[q.eje] || "x";
+    counters[prefix] = (counters[prefix] || 0) + 1;
+    q.code = prefix + counters[prefix];
+  });
+})();
 </script>
 <!-- ============================================================
      FIN DEL BANCO DE PREGUNTAS
@@ -2533,7 +2597,10 @@ const BONUS_QUESTIONS = QUESTIONS.filter(q => q.bonus);
 
     <div class="card" id="question-card">
       <div class="eje-row">
-        <div class="eje" id="q-eje"></div>
+        <div class="eje-group">
+          <span class="eje" id="q-eje"></span>
+          <span class="code-badge" id="q-code-badge"></span>
+        </div>
         <span class="bonus-badge" id="q-bonus-badge" style="display:none;">⭐ Bonus</span>
       </div>
       <div class="question" id="q-text"></div>
@@ -3022,6 +3089,7 @@ function nextQuestion() {
   const ejeEl = document.getElementById('q-eje');
   ejeEl.textContent = session.current.eje;
   ejeEl.style.color = color;
+  document.getElementById('q-code-badge').textContent = session.current.code ? ('#' + session.current.code) : '';
   document.getElementById('q-text').textContent = session.current.question;
 
   const isBonusQ = !!session.current.bonus;
@@ -3079,6 +3147,102 @@ function onSelectOption(e) {
   document.getElementById('confirm-btn').disabled = false;
 }
 
+function setupQuestionChat(q, optExps) {
+  const toggleBtn = document.getElementById('qchat-toggle');
+  const box = document.getElementById('qchat-box');
+  const messagesEl = document.getElementById('qchat-messages');
+  const input = document.getElementById('qchat-input');
+  const sendBtn = document.getElementById('qchat-send');
+  const hintEl = document.getElementById('qchat-hint');
+  if (!toggleBtn) return;
+
+  const MAX_TURNS = 6;
+  let turns = 0;
+  let history = [];
+  let busy = false;
+
+  toggleBtn.addEventListener('click', () => {
+    const open = box.style.display !== 'none';
+    box.style.display = open ? 'none' : 'block';
+    if (!open) input.focus();
+  });
+
+  function addMessage(role, text) {
+    const div = document.createElement('div');
+    div.className = 'qchat-msg ' + (role === 'user' ? 'user' : 'bot');
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
+
+  function updateHint() {
+    if (turns >= MAX_TURNS) {
+      hintEl.textContent = 'Llegaste al máximo de preguntas para esta alternativa. Pasa a la siguiente pregunta para seguir conversando.';
+      input.disabled = true;
+      sendBtn.disabled = true;
+    } else {
+      hintEl.textContent = '';
+    }
+  }
+
+  async function send() {
+    if (busy) return;
+    const text = input.value.trim();
+    if (!text || turns >= MAX_TURNS) return;
+    busy = true;
+    input.disabled = true;
+    sendBtn.disabled = true;
+    addMessage('user', text);
+    const pending = addMessage('bot', 'Pensando...');
+    pending.classList.add('pending');
+
+    try {
+      const res = await fetch('/.netlify/functions/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          eje: q.eje,
+          code: q.code,
+          question: q.question,
+          options: q.options,
+          correct: q.correct,
+          explanation: q.explanation,
+          optionExplanations: optExps,
+          message: text,
+          history: history
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      pending.remove();
+      if (!res.ok || !data.reply) {
+        addMessage('bot', 'No pude responder en este momento. Intenta de nuevo más tarde.').classList.add('error');
+      } else {
+        addMessage('bot', data.reply);
+        history.push({ role: 'user', text });
+        history.push({ role: 'assistant', text: data.reply });
+        turns++;
+      }
+    } catch (err) {
+      pending.remove();
+      addMessage('bot', 'No pude conectar con el tutor. Revisa tu conexión e intenta de nuevo.').classList.add('error');
+    } finally {
+      input.value = '';
+      busy = false;
+      if (turns < MAX_TURNS) {
+        input.disabled = false;
+        sendBtn.disabled = false;
+      }
+      updateHint();
+    }
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); send(); }
+  });
+}
+
 function onConfirm() {
   if (session.locked || session.selectedIndex === null) return;
   session.locked = true;
@@ -3122,9 +3286,21 @@ function onConfirm() {
   feedback.innerHTML = `
     <div class="verdict ${isCorrect ? 'ok' : 'no'}">${isCorrect ? 'Correcto' : 'Incorrecto'}${isBonus ? '<span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
     <div class="option-explanations">${optionsHtml}</div>
+    <div class="qchat" id="qchat">
+      <button class="qchat-toggle" id="qchat-toggle" type="button">💬 ¿Dudas sobre esta pregunta? Pregúntame</button>
+      <div class="qchat-box" id="qchat-box" style="display:none;">
+        <div class="qchat-messages" id="qchat-messages"></div>
+        <div class="qchat-input-row">
+          <input type="text" id="qchat-input" class="qchat-input" placeholder="Escribe tu duda..." maxlength="300" />
+          <button id="qchat-send" class="qchat-send" type="button">Enviar</button>
+        </div>
+        <div class="qchat-hint" id="qchat-hint"></div>
+      </div>
+    </div>
     <button class="next-btn" id="next-btn">${(session.mode !== 'spaced' && session.index === session.queue.length - 1) ? 'Ver resultados' : 'Siguiente pregunta'}</button>
   `;
   feedback.classList.add('show');
+  setupQuestionChat(q, optExps);
   document.getElementById('next-btn').addEventListener('click', () => {
     if (session.mode !== 'spaced') session.index++;
     nextQuestion();
@@ -3223,7 +3399,7 @@ function finishSession() {
         const rightExp = optExps ? optExps[q.correct] : (q.explanation || '');
         return `
           <div class="missed-item">
-            <div class="missed-eje" style="color:${color}">${q.eje}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
+            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
             <div class="missed-q">${q.question}</div>
             <div class="missed-answers">
               <div class="wrong-ans">Tu respuesta (${LETTERS[m.selected]}): ${tuResp}</div>
