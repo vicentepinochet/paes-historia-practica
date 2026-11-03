@@ -3384,11 +3384,11 @@ function renderGlobalStats() {
 function renderProgressPanel() {
   const history = loadHistory();
   const panel = document.getElementById('progress-panel');
-  if (history.length === 0) { panel.style.display = 'none'; return; }
+  const streak = history.length === 0 ? 0 : computeStreak(history);
+  // Sin racha no se muestra el panel (evita una barra vacía).
+  if (streak <= 0) { panel.style.display = 'none'; return; }
   panel.style.display = 'block';
-
-  const streak = computeStreak(history);
-  document.getElementById('streak-badge').innerHTML = streak > 0 ? `<span class="flame">🔥</span> ${streak} día${streak === 1 ? '' : 's'} seguidos` : '';
+  document.getElementById('streak-badge').innerHTML = `<span class="flame">🔥</span> ${streak} día${streak === 1 ? '' : 's'} seguidos`;
 }
 
 // ---- Banner de diagnóstico inicial (solo si nunca se ha completado una sesión) ----
