@@ -160,6 +160,16 @@
   .verdict.no { color: var(--wrong); }
   .explanation { font-size: 0.93rem; color: var(--ink-2); line-height: 1.55; }
 
+  /* ---------- FUENTE DE LA PREGUNTA ---------- */
+  .src-badge {
+    display: inline-flex; align-items: center;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    border-radius: 999px; padding: 2px 9px; border: 1px solid var(--line);
+    color: var(--ink-soft); background: transparent;
+  }
+  .src-badge.src-demre { color: #1d6fd1; border-color: #1d6fd1; background: rgba(29,111,209,0.10); }
+  .src-badge.src-preu { color: #8a5a00; border-color: #c68a1f; background: rgba(198,138,31,0.10); }
+
   /* ---------- BONUS ---------- */
   .bonus-badge {
     display: inline-flex; align-items: center; gap: 4px;
@@ -2876,6 +2886,8 @@ const EJE_CODE_PREFIX = {
     const prefix = EJE_CODE_PREFIX[q.eje] || "x";
     counters[prefix] = (counters[prefix] || 0) + 1;
     q.code = prefix + counters[prefix];
+    // Fuente: DEMRE (oficiales, ids q*), Preu (prueba del preuniversitario, ids t*), Propia (redactadas por Claude)
+    q.fuente = /^q\d+$/.test(q.id) ? "DEMRE" : (/^t\d+$/.test(q.id) ? "Preu" : "Propia");
   });
 })();
 </script>
@@ -3039,6 +3051,7 @@ const EJE_CODE_PREFIX = {
         <div class="eje-group">
           <span class="eje" id="q-eje"></span>
           <span class="code-badge" id="q-code-badge"></span>
+          <span class="src-badge" id="q-src-badge"></span>
         </div>
         <span class="bonus-badge" id="q-bonus-badge" style="display:none;">⭐ Bonus</span>
       </div>
@@ -3562,6 +3575,10 @@ function nextQuestion() {
   ejeEl.textContent = session.current.eje;
   ejeEl.style.color = color;
   document.getElementById('q-code-badge').textContent = session.current.code ? ('#' + session.current.code) : '';
+  const srcEl = document.getElementById('q-src-badge');
+  srcEl.textContent = session.current.fuente || '';
+  srcEl.className = 'src-badge' + (session.current.fuente ? ' src-' + session.current.fuente.toLowerCase() : '');
+  srcEl.style.display = session.current.fuente ? 'inline-flex' : 'none';
   document.getElementById('q-text').textContent = session.current.question;
   const qImg = document.getElementById('q-image');
   if (session.current.image) {
@@ -3890,7 +3907,7 @@ function finishSession() {
         const rightExp = optExps ? optExps[q.correct] : (q.explanation || '');
         return `
           <div class="missed-item">
-            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
+            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.fuente ? ` <span class="src-badge src-${q.fuente.toLowerCase()}">${q.fuente}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
             <div class="missed-q">${q.question}</div>
             <div class="missed-answers">
               <div class="wrong-ans">Tu respuesta (${LETTERS[m.selected]}): ${tuResp}</div>
