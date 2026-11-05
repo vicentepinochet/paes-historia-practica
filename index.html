@@ -1411,15 +1411,15 @@ const HARD_QUESTIONS = [
       "Las redes sociales no han sido prohibidas en la mayoría de los países democráticos; siguen siendo ampliamente utilizadas."
     ] },
 
-  { id: "h10", eje: "Economía", dificultad: "moderada", correct: 1,
+  { id: "h10", eje: "Economía", dificultad: "moderada", correct: 2,
     question: "Un banco central puede enfrentar un dilema entre controlar la inflación y sostener el crecimiento económico al fijar su tasa de interés. ¿Por qué se produce esta tensión?",
-    options: ["Porque subir y bajar la tasa de interés siempre generan el mismo efecto económico", "Porque una tasa más alta reduce la inflación pero también puede frenar el consumo y la inversión, afectando el crecimiento", "Porque la tasa de interés no tiene ninguna relación con el nivel de precios", "Todas las anteriores son correctas."],
-    explanation: "Subir la tasa de interés ayuda a contener la inflación al encarecer el crédito, pero ese mismo efecto desincentiva el consumo y la inversión, lo que puede ralentizar el crecimiento — de ahí el dilema de política monetaria; las otras alternativas niegan relaciones que sí existen, por lo que no todas pueden ser correctas.",
+    options: ["Porque una tasa más alta abarata el crédito y eleva la inversión, pero ese mayor gasto de las empresas presiona los precios al alza", "Porque una tasa más baja encarece el crédito y frena los precios, pero esa menor demanda reduce el empleo y el crecimiento", "Porque una tasa más alta encarece el crédito y enfría la demanda, lo que contiene los precios, pero también puede frenar el consumo, la inversión y el crecimiento", "Porque una tasa más alta reduce la inflación al disminuir la oferta de bienes, pero eleva el crecimiento al estimular las exportaciones"],
+    explanation: "Subir la tasa de interés encarece el crédito y enfría la demanda, lo que ayuda a contener la inflación; pero ese mismo efecto desincentiva el consumo y la inversión y puede ralentizar el crecimiento. De ahí el dilema de política monetaria: lo que baja los precios tiende a frenar la actividad.",
     optionExplanations: [
-      "Subir y bajar la tasa de interés generan efectos distintos y hasta opuestos sobre la economía; no producen el mismo resultado.",
-      "Correcta: subir la tasa de interés ayuda a contener la inflación al encarecer el crédito, pero ese mismo efecto puede frenar el consumo y la inversión, generando el dilema descrito.",
-      "La tasa de interés sí tiene una relación directa con el nivel de precios; es una de las principales herramientas para controlar la inflación.",
-      "Incorrecta como respuesta: no todas son correctas, ya que A y C niegan una relación entre la tasa de interés y la economía que sí existe."
+      "Incorrecta: una tasa más alta encarece el crédito, no lo abarata; por eso desincentiva la inversión en lugar de elevarla.",
+      "Incorrecta: una tasa más baja abarata el crédito y estimula la demanda; la relación descrita está invertida.",
+      "Correcta: la tasa más alta encarece el crédito y enfría la demanda, lo que contiene la inflación, pero también puede frenar el consumo y la inversión, generando el dilema descrito.",
+      "Incorrecta: la tasa de interés actúa sobre todo por el lado de la demanda, no reduciendo la oferta de bienes, y una tasa más alta tiende a frenar, no a elevar, el crecimiento."
     ] },
   { id: "h11", eje: "Economía", dificultad: "moderada", correct: 3,
     question: "En una economía con alta informalidad laboral, el aumento del empleo no necesariamente se traduce en mayor recaudación para el sistema de seguridad social. ¿Por qué ocurre esto?",
@@ -2881,7 +2881,7 @@ const DEMRE25_QUESTIONS = [
 {"id":"m25_24","eje":"Historia de Chile","dificultad":"moderada","correct":2,"question":"La idea de progreso indefinido fue uno de los conceptos culturales del siglo XIX que estuvo presente en la construcción del ideario político de la elite chilena. Durante la primera mitad del siglo XIX, ¿cuál fue una de las manifestaciones de este concepto en el desarrollo político de la república en Chile?","options":["La relevancia dada a la incorporación del país a los organismos internacionales.","El protagonismo asignado a los sectores medios en la dirección de los asuntos públicos.","El impulso otorgado a las actividades productivas mediante distintos cuerpos legislativos.","La promoción de una estrategia de expansión de los límites territoriales hacia países vecinos."],"explanation":"La élite chilena entendió el progreso como crecimiento material, por eso impulsó la producción mediante leyes de fomento (por ejemplo, a la minería y la agricultura).","optionExplanations":["Incorporarse a organismos internacionales no fue una manifestación del progreso en la política republicana de la primera mitad del siglo XIX.","La dirección de los asuntos públicos estaba en manos de la élite; los sectores medios no tuvieron protagonismo en ese período.","Correcta: el impulso a las actividades productivas mediante distintas leyes refleja la idea de progreso indefinido que compartía la élite.","La expansión hacia países vecinos no fue una estrategia derivada de la idea de progreso en la primera mitad del siglo XIX."]},
 {"id":"m25_25","eje":"Historia de Chile","dificultad":"moderada","correct":3,"question":"Durante la primera mitad del siglo XIX, la economía chilena se insertó en los mercados internacionales a partir de la exportación de materias primas, actividad que se transformó en uno de los principales motores del crecimiento económico nacional. En este escenario, ¿cuál fue una de las consecuencias del crecimiento económico derivado del aumento de las exportaciones?","options":["El afianzamiento de la industria mecanizada.","La internacionalización de la actividad forestal.","El aumento de la inversión pública en la minería.","La instalación de sociedades comerciales inglesas."],"explanation":"El auge exportador atrajo a comerciantes extranjeros, en especial británicos, que instalaron casas comerciales (sobre todo en Valparaíso).","optionExplanations":["Chile no logró desarrollar una industria mecanizada en ese período; su economía siguió basada en materias primas.","La actividad forestal no se internacionalizó en la primera mitad del siglo XIX.","La inversión en minería era principalmente privada; no hubo un aumento de inversión pública.","Correcta: el crecimiento exportador favoreció la instalación de sociedades comerciales inglesas en puertos como Valparaíso."]},
 {"id":"m25_26","eje":"Historia de Chile","dificultad":"moderada","correct":2,"question":"Lee el siguiente texto que alude a las exportaciones de Chile a comienzos del siglo XIX:\n\n«Los minerales –plata y cobre– constituyeron los principales productos de exportación de la joven república, en la década de 1820, el cobre constituía más del 50 % de los totales exportados. La demanda de los nuevos mercados –Inglaterra, Estados Unidos y las Indias Inglesas (Calcuta)– habían provocado un alza en los precios del cobre en barra y un aumento en la producción».\n\nNazer, R. (1994). José Tomás Urmeneta. Un empresario del siglo XIX.\n\nConsiderando lo señalado en la cita y el contexto de la época aludida, ¿cuál fue uno de los factores que explica la demanda del mercado internacional por estos productos?","options":["La exportación de materias primas a las colonias por parte de los imperios europeos.","La gran acumulación de metales preciosos por parte de las potencias mundiales.","Los procesos industriales provocados por el desarrollo científico-tecnológico.","El monopolio comercial de las potencias mundiales con los países latinoamericanos."],"explanation":"La Revolución Industrial en Europa y Estados Unidos aumentó la demanda de metales como el cobre, que se usaban en los procesos industriales.","optionExplanations":["La cita habla de exportaciones de Chile, no de materias primas que los imperios europeos vendían a sus colonias.","La demanda no se explica por acumulación de metales preciosos, sino por su uso industrial.","Correcta: el desarrollo científico-tecnológico y los procesos industriales demandaban cobre y otros minerales.","Tras la independencia ya no existía el monopolio comercial colonial con Latinoamérica."]},
-{"id":"m25_27","eje":"Historia de Chile","dificultad":"moderada","correct":0,"question":"A mediados del siglo XIX la agricultura chilena vivió una importante revitalización económica. ¿Cuál fue una de las situaciones del contexto histórico del periodo que favoreció dicha revitalización?","options":["La demanda de productos alimenticios en los mercados de California y Australia.","La mayor conectividad entre las regiones exportadoras y los mercados asiáticos.","La aplicación de un plan de reforma agraria basado en el modelo latinoamericano.","La llegada masiva de trabajadores extranjeros que colonizaron las provincias de la Zona Central."],"explanation":"Entre 1848 y 1851, la fiebre del oro en California y Australia generó una gran demanda de trigo y harina que Chile exportó.","optionExplanations":["Correcta: los mercados de California y Australia demandaron productos agrícolas chilenos, lo que revitalizó la agricultura.","En esa época las exportaciones agrícolas no se orientaban a los mercados asiáticos.","La reforma agraria es un proceso del siglo XX, no de mediados del siglo XIX.","La colonización extranjera se concentró en el sur del país, no en la Zona Central."]},
+{"id":"m25_27","eje":"Historia de Chile","dificultad":"moderada","correct":0,"question":"A mediados del siglo XIX la agricultura chilena vivió una importante revitalización económica. ¿Cuál fue una de las situaciones del contexto histórico del periodo que favoreció dicha revitalización?","options":["La demanda de productos alimenticios en los mercados de California y Australia.","La mayor conectividad entre las regiones exportadoras y los mercados asiáticos.","La aplicación de un plan de reforma agraria basado en el modelo latinoamericano.","La llegada masiva de trabajadores extranjeros que colonizaron las provincias de la Zona Central."],"explanation":"Entre 1848 y 1851, la fiebre del oro en California y Australia atrajo a miles de trabajadores a las minas, y estos mercados necesitaban alimentos, en especial trigo y harina, para abastecerlos. Chile los exportó, lo que revitalizó la agricultura de la Zona Central.","optionExplanations":["Correcta: durante la fiebre del oro, California y Australia requerían más trigo y harina para alimentar a los trabajadores de las minas. Esa demanda externa impulsó las exportaciones agrícolas chilenas y revitalizó la agricultura.","En esa época las exportaciones agrícolas no se orientaban a los mercados asiáticos.","La reforma agraria es un proceso del siglo XX, no de mediados del siglo XIX.","La colonización extranjera se concentró en el sur del país, no en la Zona Central."]},
 {"id":"m25_29","eje":"Historia de Chile","dificultad":"moderada","correct":3,"question":"Hacia la segunda mitad del siglo XIX, las potencias del Atlántico experimentaron un proceso de expansión económica gracias a un importante desarrollo industrial. Por su parte, Chile fue incapaz de alcanzar ese nivel de desarrollo. Al respecto, ¿cuál es un elemento de continuidad histórica que permite explicar este retraso de la economía chilena?","options":["La predominancia de la propiedad minera estatal.","La mantención del monopolio comercial con Europa.","La permanencia de una estructura financiera pública.","La persistencia de una matriz productiva extractivista."],"explanation":"La continuidad que explica el retraso industrial es que Chile mantuvo una economía basada en la exportación de materias primas (matriz extractivista), sin desarrollar industria propia.","optionExplanations":["La propiedad minera era mayoritariamente privada, no estatal.","El monopolio comercial con Europa terminó con la independencia.","No existía una estructura financiera pública que permita explicar el atraso.","Correcta: la dependencia de exportar materias primas (cobre, plata, trigo, salitre) se mantuvo y limitó el desarrollo industrial."]},
 {"id":"m25_30","eje":"Historia de Chile","dificultad":"moderada","correct":2,"question":"A lo largo del siglo XIX, Chile experimentó un importante crecimiento económico como consecuencia de su progresiva inserción en la economía internacional y un conjunto de medidas que operaron como factores internos que favorecieron este crecimiento. En este sentido, ¿cuál fue una de las medidas que favoreció la inserción de la economía chilena en los mercados internacionales durante el siglo XIX?","options":["La implementación de una política de industrialización.","La puesta en marcha de un proceso de reforma agraria.","La inversión en distintas infraestructuras de transportes.","La estatización de las instituciones del sector financiero."],"explanation":"Para exportar productos era necesario transportarlos: la construcción de ferrocarriles, caminos y puertos facilitó la inserción de Chile en los mercados internacionales.","optionExplanations":["Durante el siglo XIX Chile no aplicó una política de industrialización.","La reforma agraria se implementó en el siglo XX.","Correcta: invertir en infraestructura de transportes (ferrocarriles, puertos) permitió llevar la producción a los mercados.","La estatización del sector financiero no ocurrió en el siglo XIX."]},
 {"id":"m25_32","eje":"Historia de Chile","dificultad":"dificil","correct":3,"question":"A continuación se presenta un texto sobre los cultivos agrícolas en la provincia de Santiago durante el siglo XIX:\n\n«Pertenecientes estos en su mayor parte a propietarios acaudalados y entusiastas por el progreso de la agricultura, han comenzado ya a ser labrados con la multitud de máquinas agrícolas inventadas en Europa y Estados Unidos para reemplazar la fuerza animal por la mecánica, multiplicando los productos en gran escala y disminuyendo en la misma proporción los costos del laboreo».\n\nAracena, F. (1884). La industria del cobre en la provincia de Atacama y Coquimbo y los grandes depósitos carboníferos de Lota y Coronel en la provincia de Concepción.\n\nConsiderando el contexto histórico del siglo XIX, ¿cuál era una característica de la economía chilena que es correcto inferir a partir del texto?","options":["La especialización en la producción de alimentos procesados.","La decadencia de la actividad ganadera en el sistema productivo.","La capacidad interna para realizar innovaciones tecnológicas productivas.","La influencia del mundo industrializado en la organización de la producción."],"explanation":"El texto indica que se usaban máquinas «inventadas en Europa y Estados Unidos»: la economía chilena incorporaba tecnología de los países industrializados y se veía influida por ellos.","optionExplanations":["El texto trata sobre cultivos y maquinaria agrícola, no sobre alimentos procesados.","El texto no se refiere a la actividad ganadera; solo menciona el reemplazo de la fuerza animal por la mecánica en las labores agrícolas.","Las máquinas eran inventadas en Europa y Estados Unidos, por lo que no muestra capacidad interna de innovación.","Correcta: el uso de máquinas inventadas en el extranjero evidencia la influencia del mundo industrializado en la producción chilena."]},
@@ -3002,16 +3002,6 @@ const EJE_CODE_PREFIX = {
       </div>
 
       <div class="setup-section">
-        <div class="setup-label">Fuente de las preguntas</div>
-        <div class="chip-row" id="fuente-chips">
-          <button class="chip" data-val="todas">Todas</button>
-          <button class="chip" data-val="DEMRE">DEMRE</button>
-          <button class="chip" data-val="Propia">Propias</button>
-          <button class="chip" data-val="Preu">Preu</button>
-        </div>
-      </div>
-
-      <div class="setup-section">
         <div class="setup-label">Preguntas bonus ⭐</div>
         <div class="chip-row" id="bonus-chips">
           <button class="chip" data-val="on">Con preguntas bonus</button>
@@ -3111,7 +3101,6 @@ const EJE_CODE_PREFIX = {
         <div class="eje-group">
           <span class="eje" id="q-eje"></span>
           <span class="code-badge" id="q-code-badge"></span>
-          <span class="src-badge" id="q-src-badge"></span>
         </div>
         <span class="bonus-badge" id="q-bonus-badge" style="display:none;">⭐ Bonus</span>
       </div>
@@ -3273,7 +3262,6 @@ const DIAG_KEY = "paes_historia_diag_done_v1";
 // ==========================================================
 let setupEjes = new Set(EJES);
 let setupDificultad = "mezcla";
-let setupFuente = "todas";
 let setupMode = "spaced";
 let setupCount = 10;
 let setupMinutes = 10;
@@ -3301,7 +3289,6 @@ function renderEjeChips() {
 function currentPool() {
   return NORMAL_QUESTIONS.filter(q =>
     setupEjes.has(q.eje) &&
-    (setupFuente === "todas" || q.fuente === setupFuente) &&
     (setupDificultad === "mezcla" || q.dificultad === setupDificultad)
   );
 }
@@ -3310,7 +3297,6 @@ function currentPool() {
 function currentBonusPool() {
   return BONUS_QUESTIONS.filter(q =>
     setupEjes.has(q.eje) &&
-    (setupFuente === "todas" || q.fuente === setupFuente) &&
     (setupDificultad === "mezcla" || q.dificultad === setupDificultad)
   );
 }
@@ -3335,7 +3321,6 @@ function setupChipGroup(containerId, onPick, initialVal) {
 }
 
 setupChipGroup('dificultad-chips', v => setupDificultad = v, setupDificultad);
-setupChipGroup('fuente-chips', v => setupFuente = v, setupFuente);
 setupChipGroup('count-chips', v => setupCount = parseInt(v), setupCount);
 setupChipGroup('time-chips', v => setupMinutes = parseInt(v), setupMinutes);
 setupChipGroup('bonus-chips', v => setupBonus = (v === 'on'), setupBonus ? 'on' : 'off');
@@ -3401,7 +3386,6 @@ function renderDiagnosticBanner() {
 function startDiagnostic() {
   setupEjes = new Set(EJES);
   setupDificultad = 'mezcla';
-  setupFuente = 'todas';
   setupMode = 'fixed';
   setupCount = 10;
   setupBonus = false;
@@ -3640,11 +3624,6 @@ function nextQuestion() {
   ejeEl.textContent = session.current.eje;
   ejeEl.style.color = color;
   document.getElementById('q-code-badge').textContent = session.current.code ? ('#' + session.current.code) : '';
-  const srcEl = document.getElementById('q-src-badge');
-  srcEl.textContent = session.current.fuente || '';
-  srcEl.className = 'src-badge' + (session.current.fuente ? ' src-' + session.current.fuente.toLowerCase() : '');
-  srcEl.title = session.current.fuenteDetalle || '';
-  srcEl.style.display = session.current.fuente ? 'inline-flex' : 'none';
   document.getElementById('q-text').textContent = session.current.question;
   const qImg = document.getElementById('q-image');
   if (session.current.image) {
@@ -3973,7 +3952,7 @@ function finishSession() {
         const rightExp = optExps ? optExps[q.correct] : (q.explanation || '');
         return `
           <div class="missed-item">
-            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.fuente ? ` <span class="src-badge src-${q.fuente.toLowerCase()}">${q.fuente}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
+            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
             <div class="missed-q">${q.question}</div>
             <div class="missed-answers">
               <div class="wrong-ans">Tu respuesta (${LETTERS[m.selected]}): ${tuResp}</div>
