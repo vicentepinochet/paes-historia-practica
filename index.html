@@ -8668,6 +8668,16 @@ const EJE_CODE_PREFIX = {
       </div>
 
       <div class="setup-section">
+        <div class="setup-label">Fuente de las preguntas</div>
+        <div class="chip-row" id="fuente-chips">
+          <button class="chip" data-val="todas">Todas</button>
+          <button class="chip" data-val="DEMRE">PAES</button>
+          <button class="chip" data-val="Propia">Propias</button>
+          <button class="chip" data-val="Preu">PREU</button>
+        </div>
+      </div>
+
+      <div class="setup-section">
         <div class="setup-label">Preguntas bonus ⭐</div>
         <div class="chip-row" id="bonus-chips">
           <button class="chip" data-val="on">Con preguntas bonus</button>
@@ -8767,6 +8777,7 @@ const EJE_CODE_PREFIX = {
         <div class="eje-group">
           <span class="eje" id="q-eje"></span>
           <span class="code-badge" id="q-code-badge"></span>
+          <span class="src-badge" id="q-src-badge"></span>
         </div>
         <span class="bonus-badge" id="q-bonus-badge" style="display:none;">⭐ Bonus</span>
       </div>
@@ -8928,6 +8939,8 @@ const DIAG_KEY = "paes_historia_diag_done_v1";
 // ==========================================================
 let setupEjes = new Set(EJES);
 let setupDificultad = "mezcla";
+const FUENTE_LABEL = { DEMRE: "PAES", Propia: "Propia", Preu: "PREU" };
+let setupFuente = "todas";
 let setupMode = "spaced";
 let setupCount = 10;
 let setupMinutes = 10;
@@ -8955,6 +8968,7 @@ function renderEjeChips() {
 function currentPool() {
   return NORMAL_QUESTIONS.filter(q =>
     setupEjes.has(q.eje) &&
+    (setupFuente === "todas" || q.fuente === setupFuente) &&
     (setupDificultad === "mezcla" || q.dificultad === setupDificultad)
   );
 }
@@ -8963,6 +8977,7 @@ function currentPool() {
 function currentBonusPool() {
   return BONUS_QUESTIONS.filter(q =>
     setupEjes.has(q.eje) &&
+    (setupFuente === "todas" || q.fuente === setupFuente) &&
     (setupDificultad === "mezcla" || q.dificultad === setupDificultad)
   );
 }
@@ -8987,6 +9002,7 @@ function setupChipGroup(containerId, onPick, initialVal) {
 }
 
 setupChipGroup('dificultad-chips', v => setupDificultad = v, setupDificultad);
+setupChipGroup('fuente-chips', v => setupFuente = v, setupFuente);
 setupChipGroup('count-chips', v => setupCount = parseInt(v), setupCount);
 setupChipGroup('time-chips', v => setupMinutes = parseInt(v), setupMinutes);
 setupChipGroup('bonus-chips', v => setupBonus = (v === 'on'), setupBonus ? 'on' : 'off');
@@ -9052,6 +9068,7 @@ function renderDiagnosticBanner() {
 function startDiagnostic() {
   setupEjes = new Set(EJES);
   setupDificultad = 'mezcla';
+  setupFuente = 'todas';
   setupMode = 'fixed';
   setupCount = 10;
   setupBonus = false;
@@ -9290,6 +9307,11 @@ function nextQuestion() {
   ejeEl.textContent = session.current.eje;
   ejeEl.style.color = color;
   document.getElementById('q-code-badge').textContent = session.current.code ? ('#' + session.current.code) : '';
+  const srcEl = document.getElementById('q-src-badge');
+  srcEl.textContent = FUENTE_LABEL[session.current.fuente] || session.current.fuente || '';
+  srcEl.className = 'src-badge' + (session.current.fuente ? ' src-' + session.current.fuente.toLowerCase() : '');
+  srcEl.title = session.current.fuenteDetalle || '';
+  srcEl.style.display = session.current.fuente ? 'inline-flex' : 'none';
   document.getElementById('q-text').textContent = session.current.question;
   const qImg = document.getElementById('q-image');
   if (session.current.image) {
@@ -9618,7 +9640,7 @@ function finishSession() {
         const rightExp = optExps ? optExps[q.correct] : (q.explanation || '');
         return `
           <div class="missed-item">
-            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
+            <div class="missed-eje" style="color:${color}">${q.eje}${q.code ? ` <span class="code-badge">#${q.code}</span>` : ''}${q.fuente ? ` <span class="src-badge src-${q.fuente.toLowerCase()}">${FUENTE_LABEL[q.fuente] || q.fuente}</span>` : ''}${q.bonus ? ' <span class="bonus-badge">⭐ Bonus</span>' : ''}</div>
             <div class="missed-q">${q.question}</div>
             <div class="missed-answers">
               <div class="wrong-ans">Tu respuesta (${LETTERS[m.selected]}): ${tuResp}</div>
